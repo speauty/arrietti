@@ -1,4 +1,4 @@
 <template>
-  hello, my electron
+  <router-view></router-view>
 </template>
 
