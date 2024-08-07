@@ -1,3 +1,4 @@
 <template>
-    <div class="text-red-600">首页</div>
+    <div class="w-full h-full text-red-600 bg-primary">
+    </div>
 </template>

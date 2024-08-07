@@ -12,6 +12,7 @@
     "icon": "electron-icon-builder --input=./public/logo.png --output=build --flatten"
   },
   "dependencies": {
+    "ant-design-vue": "^4.2.3",
     "pinia": "^2.2.1",
     "vue": "^3.4.21",
     "vue-router": "^4.4.3"
