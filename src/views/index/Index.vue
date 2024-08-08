@@ -7,12 +7,13 @@
             <template #icon>
                 <AppstoreOutlined />
             </template>
-            <a-float-button type="primary" tooltip="我要收藏">
+            <a-float-button type="primary" tooltip="我要收藏" @click="onClickShowModal">
                 <template #icon>
                     <PlusOutlined />
                 </template>
             </a-float-button>
         </a-float-button-group>
+        <EleCreateModal ref="refEleCreateModal" />
     </div>
 
 </template>
@@ -20,8 +21,9 @@
 <script setup lang="ts">
 import { AppstoreOutlined, PlusOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
+import EleCreateModal, { RefEleCreateModal } from '@/components/EleCreateModal.vue'
 import { Ele } from 'types/types'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 
 const listEle = ref<Ele[]>([ 
     {
@@ -46,5 +48,10 @@ const listEle = ref<Ele[]>([
     },
 ] as Ele[])
 
+const refEleCreateModal = ref<RefEleCreateModal|null>(null)
+
+const onClickShowModal = () => {
+    nextTick(() => refEleCreateModal.value?.onClickShowModal())
+}
 
 </script>

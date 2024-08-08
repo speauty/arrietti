@@ -1,0 +1,86 @@
+<template>
+    <a-modal v-model:open="modalCreateIsVisible" title="我要收藏" wrapClassName="select-none" :maskClosable="false"
+        :keyboard="false" :footer="null" :centered="true" okText="收藏" cancelText="取消">
+        <a-spin :spinning="isSpinForForm" :tip="tipsForSpin">
+            <a-form :label-col="{ style: { width: '100px' } }" :colon="false">
+                <a-form-item label="站点链接">
+                    <a-input-search allow-clear v-model:value="ele.link" placeholder="请输入站点链接" @search="onClickToHack"
+                        enter-button="HACK" />
+                </a-form-item>
+                <a-flex gap="12">
+                    <a-form-item label="站点名称">
+                        <a-input v-model:value="ele.title" placeholder="请输入名称" allow-clear />
+                    </a-form-item>
+                    <a-form-item label="排序" tooltip="控制站点显示顺序, 值越大, 越靠前">
+                        <a-input v-model:value="ele.num_order" placeholder="请输入排序" allow-clear />
+                    </a-form-item>
+                </a-flex>
+                <a-form-item label="站点标签" tooltip="站点标签, 又叫站点关键字, 以中文逗号间隔">
+                    <a-select v-model:value="ele.keywords" mode="tags" notFoundContent="暂无标签, 请手动输入, 回车确认" />
+                </a-form-item>
+                <a-form-item label="站点简介">
+                    <a-textarea v-model:value="ele.desc" :rows="2" allow-clear :auto-size="{ minRows: 2, maxRows: 2 }"
+                        placeholder="请输入站点简介" />
+                </a-form-item>
+                <a-form-item>
+                    <div class="w-full flex items-center justify-center gap-2">
+                        <a-button @click="onClickCancel">取消</a-button>
+                        <a-button type="primary" @click="onClickSubmit">收藏</a-button>
+                    </div>
+                </a-form-item>
+            </a-form>
+        </a-spin>
+    </a-modal>
+</template>
+
+<script setup lang="ts">
+import { getEleFromSourceCode } from '@/utils/util'
+import { MessageApi } from 'ant-design-vue/es/message'
+import { Ele } from 'types/types'
+import { getCurrentInstance, ref } from 'vue'
+
+export interface RefEleCreateModal {
+    onClickShowModal: () => void
+}
+
+const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
+const modalCreateIsVisible = ref<boolean>(false)
+
+const ele = ref<Ele>({ link: "https://juejin.cn/" } as Ele)
+const isSpinForForm = ref<boolean>(false)
+const tipsForSpin = ref<string>("")
+
+const onClickToHack = (link: string) => {
+    ele.value = { link: link, num_order: ele.value.num_order } as Ele
+    if (!link) return
+    const linkParsed = new URL(link)
+    isSpinForForm.value = true
+    tipsForSpin.value = "HACK......"
+    window.api.hackByUrl(link).then(souceCode => {
+        const eleParsed = getEleFromSourceCode(linkParsed.origin, souceCode)
+        ele.value.title = eleParsed.title
+        ele.value.desc = eleParsed.desc
+        ele.value.link_logo = eleParsed.link_logo
+        if (eleParsed.keywords) ele.value.keywords = eleParsed.keywords
+    }).catch(err => {
+        console.log(typeof err)
+    }).finally(() => {
+        isSpinForForm.value = false
+        tipsForSpin.value = ""
+    })
+}
+
+const onClickCancel = () => {
+    modalCreateIsVisible.value = false
+}
+
+const onClickSubmit = () => {
+    message.info("开发中。。。")
+}
+
+const onClickShowModal = () => {
+    modalCreateIsVisible.value = true
+}
+
+defineExpose({onClickShowModal})
+</script>
