@@ -54,6 +54,7 @@ const onClickToHack = (link: string) => {
     ele.value = { link: link, num_order: ele.value.num_order } as Ele
     if (!link) return
     const linkParsed = new URL(link)
+    ele.value.link_origin = linkParsed.origin
     isSpinForForm.value = true
     tipsForSpin.value = "HACK......"
     window.api.hackByUrl(link).then(souceCode => {

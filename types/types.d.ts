@@ -4,6 +4,7 @@ export interface Ele {
     desc: string
     link_logo: string
     link: string
+    link_origin: string
     num_order: number
     keywords?: string[]
     is_accessible: boolean

@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<{
         link: "https://www.baidu.com", link_logo: "https://www.baidu.com/favicon.ico",
         num_order: 12, is_accessible: true,
         created_at: "", updated_at: ""
-    }
+    } as Ele
   }
 })
 
