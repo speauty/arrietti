@@ -27,7 +27,6 @@ const props = withDefaults(defineProps<{
 })
 
 const onClick = () => {
-    console.log(window)
     window.api.openUrlWithDefaultBrowser(props.ele.link)
 }
 </script>
