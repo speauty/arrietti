@@ -3,6 +3,7 @@ import { app, BrowserWindow, Menu } from 'electron'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { menus } from './config'
+import { registerApis } from './api'
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -30,7 +31,7 @@ let win: BrowserWindow | null
 function createWindow() {
   win = new BrowserWindow({
     icon: path.join(process.env.VITE_PUBLIC, 'logo.png'),
-    minWidth: 700, minHeight: 500,
+    minWidth: 824, minHeight: 500,
     webPreferences: {
       preload: path.join(__dirname, 'preload.mjs'),
     },
@@ -69,4 +70,7 @@ app.on('activate', () => {
   }
 })
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+  registerApis()
+  createWindow()
+})

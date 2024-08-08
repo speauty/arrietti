@@ -21,7 +21,12 @@ declare namespace NodeJS {
   }
 }
 
+interface API {
+  openUrlWithDefaultBrowser: (url: string) => void,
+}
+
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
   ipcRenderer: import('electron').IpcRenderer
+  api: API
 }
