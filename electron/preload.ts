@@ -1,5 +1,4 @@
 import { ipcRenderer, contextBridge } from 'electron'
-import { exposeApis } from './api'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -21,4 +20,9 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   },
 })
 
-contextBridge.exposeInMainWorld('api', exposeApis())
+contextBridge.exposeInMainWorld('api',{
+  openUrlWithDefaultBrowser: (url: string) => ipcRenderer.send('api:openUrlWithDefaultBrowser', url),
+  hackByUrl: (url: string) => ipcRenderer.invoke('api:hackByUrl', url),
+  eleCreate: (rawEle: string) => ipcRenderer.invoke("api:eleCreate", rawEle),
+  eleList: () => ipcRenderer.invoke("api:eleList"),
+})

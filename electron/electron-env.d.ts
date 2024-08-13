@@ -24,6 +24,8 @@ declare namespace NodeJS {
 interface API {
   openUrlWithDefaultBrowser: (url: string) => void,
   hackByUrl: (url: string) => Promise<any>,
+  eleCreate: (rawEle: string) => Promise<boolean|Error>,
+  eleList: () => Promise<string|Error>,
 }
 
 // Used in Renderer process, expose in `preload.ts`

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { menus } from './config'
 import { registerApis } from './api'
+import { initDB } from './db/db'
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -71,6 +72,9 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(() => {
+  initDB().then(result => {
+    console.log(result)
+  })
   registerApis()
   createWindow()
 })

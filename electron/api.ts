@@ -1,17 +1,50 @@
 /** 接口-网路请求 */
-import { ipcMain, IpcMainInvokeEvent, ipcRenderer, shell, net } from 'electron'
+import { ipcMain, IpcMainInvokeEvent, shell, net } from 'electron'
+import { Ele } from 'types/types'
+import { getDB } from './db/db'
+import type { Database } from 'sqlite3'
 
 
 export const registerApis = () => {
     ipcMain.on('api:openUrlWithDefaultBrowser', openUrlWithDefaultBrowser)
     ipcMain.handle('api:hackByUrl', hackByUrl)
+    ipcMain.handle('api:eleCreate', eleCreate)
+    ipcMain.handle('api:eleList', eleList)
 }
 
-export const exposeApis = () => {
-    return {
-        openUrlWithDefaultBrowser: (url: string) => ipcRenderer.send('api:openUrlWithDefaultBrowser', url),
-        hackByUrl: (url: string) => ipcRenderer.invoke('api:hackByUrl', url),
-    }
+export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<boolean|Error> => {
+    return new Promise<boolean>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            let ele = JSON.parse(rawEle) as Ele
+            !ele?.desc && (ele.desc = "")
+            !ele?.link_logo && (ele.link_logo = "")
+            !ele?.num_order && (ele.num_order = 0)
+            db.get(`select count(*) as cnt from arrietti_ele where link_origin='${ele.link_origin}'`, (err :Error|null, result: any): void => {
+                err && reject(err)
+                if (result?.cnt > 0) reject(new Error("当前站点已存在"))
+            })
+            .run(
+                `insert into arrietti_ele (title,desc,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) values ('${ele.title}','${ele.desc}','${ele.link_logo}','${ele.link}','${ele.link_origin}',${ele.num_order},'${ele.is_accessible}','${ele.created_at}','${ele.updated_at}')`,
+                (err => {
+                    err?reject(err):resolve(true)
+                })
+            )
+        }).catch((err: Error) => reject(err))
+    })
+}
+
+export const eleList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
+    return new Promise<string|Error>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            db.all(
+                "select * from arrietti_ele order by num_order desc, id desc",
+                ((err: Error|null, raws: unknown[]) => {
+                    err && reject(err)
+                    resolve(JSON.stringify(raws))
+                })
+            )
+        }).catch(err => reject(err))
+    })
 }
 
 export const openUrlWithDefaultBrowser = (_event: IpcMainInvokeEvent, url: string): void => {
