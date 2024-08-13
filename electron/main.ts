@@ -72,9 +72,7 @@ app.on('activate', () => {
 })
 
 app.whenReady().then(() => {
-  initDB().then(result => {
-    console.log(result)
-  })
+  initDB()
   registerApis()
   createWindow()
 })

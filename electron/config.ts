@@ -1,9 +1,22 @@
-import { BrowserWindow, dialog } from "electron"
+import { BrowserWindow, dialog, app } from "electron"
 
 const isMac = process.platform === 'darwin'
 
 export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOptions) | (Electron.MenuItem)> => {
-    return [
+     
+    return app.isPackaged?[
+        {
+            label: "文件(F)(&F)", submenu: [
+                { label: "退出(&Q)", role: isMac ? 'close' : 'quit' }
+            ]
+        },
+        {
+            label: "帮助(H)(&H)", submenu: [
+                { label: "刷新", role: "reload" },
+                { label: "关于", click: () => dialogForAbout(win) },
+            ]
+        },
+    ]:[
         {
             label: "文件(F)(&F)", submenu: [
                 { label: "退出(&Q)", role: isMac ? 'close' : 'quit' }
