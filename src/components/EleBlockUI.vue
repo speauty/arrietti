@@ -3,7 +3,7 @@
     <div @click="onClickToOpenInBrower"
       class="rounded-xl flex items-center justify-between gap-2 w-64 h-24 p-2 overflow-hidden text-slate-600 hover:text-primary hover:shadow-lg hover:shadow-primary/30 hover:border-transparent border border-solid border-primary/20 shadow-lg shadow-primary/10 cursor-pointer ">
       <div class="h-full w-12 flex items-center justify-center">
-        <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" fallback="/public/logo.png"/>
+        <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" fallback="/logo.png"/>
       </div>
       <div class="h-full w-48 flex flex-col gap-1 overflow-hidden">
         <div class="w-full text-sm truncate">{{ ele.title }}</div>
