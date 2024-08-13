@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full h-full overflow-x-hidden">
+    <div class="w-full h-full overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-primary/80 scrollbar-track-primary/20">
         <div class="flex flex-wrap gap-3">
             <EleBlockUI v-for="ele in listEle" :ele="ele" @delete="onEmitDeleteForEle" />
         </div>
