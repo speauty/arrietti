@@ -1,7 +1,7 @@
 <template>
-    <div class="w-full h-full">
+    <div class="w-full h-full overflow-x-hidden">
         <div class="flex flex-wrap gap-3">
-            <EleBlockUI v-for="ele in listEle" :ele="ele" />
+            <EleBlockUI v-for="ele in listEle" :ele="ele" @delete="onEmitDeleteForEle" />
         </div>
         <a-float-button-group trigger="hover" type="primary" tooltip="快捷导航" :style="{ bottom: '24px', right: '24px' }">
             <template #icon>
@@ -33,15 +33,8 @@ const listEle = ref<Ele[]>([] as Ele[])
 
 const refEleCreateModal = ref<RefEleCreateModal | null>(null)
 
-const onEmitCloseForEleCreate = () => {
-    queryEleList()
-}
-
-const onClickShowModal = () => {
-    nextTick(() => refEleCreateModal.value?.onClickShowModal())
-}
-
 const queryEleList = () => {
+    listEle.value = []
     window.api.eleList().then((result: Error|string) => {
         if (result instanceof Error) {
             message.error(getErrorMessage(result))
@@ -51,6 +44,14 @@ const queryEleList = () => {
     }).catch((err: Error) => {
         message.error(getErrorMessage(err))
     })
+}
+
+const onEmitCloseForEleCreate = queryEleList
+
+const onEmitDeleteForEle = (_eleId: number) => queryEleList
+
+const onClickShowModal = () => {
+    nextTick(() => refEleCreateModal.value?.onClickShowModal())
 }
 
 onMounted(() => {

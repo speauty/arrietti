@@ -10,6 +10,7 @@ export const registerApis = () => {
     ipcMain.handle('api:hackByUrl', hackByUrl)
     ipcMain.handle('api:eleCreate', eleCreate)
     ipcMain.handle('api:eleList', eleList)
+    ipcMain.handle('api:eleDelete', eleDelete)
 }
 
 export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<boolean|Error> => {
@@ -41,6 +42,20 @@ export const eleList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
                 ((err: Error|null, raws: unknown[]) => {
                     err && reject(err)
                     resolve(JSON.stringify(raws))
+                })
+            )
+        }).catch(err => reject(err))
+    })
+}
+
+export const eleDelete = (_event: IpcMainInvokeEvent, eleId: number): Promise<boolean|Error> => {
+    return new Promise<boolean|Error>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            db.run(
+                `delete from arrietti_ele where id=${eleId}`,
+                ((err: Error|null) => {
+                    err && reject(err)
+                    resolve(true)
                 })
             )
         }).catch(err => reject(err))

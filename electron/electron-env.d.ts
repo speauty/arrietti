@@ -26,6 +26,7 @@ interface API {
   hackByUrl: (url: string) => Promise<any>,
   eleCreate: (rawEle: string) => Promise<boolean|Error>,
   eleList: () => Promise<string|Error>,
+  eleDelete: (eleId: number) => Promise<boolean|Error>,
 }
 
 // Used in Renderer process, expose in `preload.ts`
