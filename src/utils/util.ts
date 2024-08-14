@@ -10,8 +10,11 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
     if (!ico) {
         ico = $('link[rel="shortcut icon"]').first().attr("href")
     }
-    if (ico) { // base64,
-        if (!ico.includes("base64,") && !(ico.includes("https://") || ico.includes("http://"))) ico = `${origin}${ico}`
+    if (ico) {
+        if (!ico.includes("base64,") && !(ico.includes("https://") || ico.includes("http://"))) {
+            ico[0] !== "/" && (ico = `/${ico}`)
+            ico = `${origin}${ico}`
+        }
         ele.link_logo = ico
     }
     const keywords = $('meta[name="keywords"]').attr("content")
