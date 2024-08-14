@@ -17,6 +17,7 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
     return new Promise<boolean>((resolve, reject) => {
         getDB().then((db: Database) => {
             let ele = JSON.parse(rawEle) as Ele
+            !ele?.keywords && (ele.keywords = [])
             !ele?.desc && (ele.desc = "")
             !ele?.link_logo && (ele.link_logo = "")
             !ele?.num_order && (ele.num_order = 0)
@@ -25,7 +26,7 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
                 if (result?.cnt > 0) reject(new Error("当前站点已存在"))
             })
             .run(
-                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at],
                 (err => err?reject(err):resolve(true))
             )

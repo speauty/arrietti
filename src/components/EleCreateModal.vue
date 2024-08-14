@@ -16,11 +16,11 @@
                         <a-input v-model:value="ele.num_order" placeholder="请输入排序" allow-clear />
                     </a-form-item>
                 </a-flex>
-                <a-form-item label="站点标签" tooltip="站点标签, 又叫站点关键字, 以中文逗号间隔" name="keywords">
+                <a-form-item label="站点标签" tooltip="站点标签, 又叫站点关键字, 以固定字符串间隔" name="keywords">
                     <a-select v-model:value="ele.keywords" mode="tags" notFoundContent="暂无标签, 请手动输入, 回车确认" />
                 </a-form-item>
                 <a-form-item label="站点简介" name="desc">
-                    <a-textarea v-model:value="ele.desc" :rows="2" allow-clear :auto-size="{ minRows: 2, maxRows: 2 }"
+                    <a-textarea v-model:value="ele.desc" :rows="2" :auto-size="{ minRows: 2, maxRows: 2 }"
                         placeholder="请输入站点简介" />
                 </a-form-item>
                 <a-form-item>
@@ -96,6 +96,7 @@ const onClickSubmit = () => {
         const now = dayjs().format("YYYY-MM-DD HH:mm:ss")
         ele.value.created_at = now
         ele.value.updated_at = now
+        ele.value.is_accessible = true
         isSpinForForm.value = true
         window.api.eleCreate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
             if (result === false || result instanceof Error) {
