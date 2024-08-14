@@ -4,7 +4,7 @@
       colorPrimary: '#6db64c',
     },
   }">
-    <div class="w-screen h-screen p-2 select-none">
+    <div class="w-screen h-screen p-2 select-none custom-overflow-y">
       <router-view></router-view>
     </div>
   </a-config-provider>

@@ -1,0 +1,41 @@
+<template>
+    <a-modal v-model:open="modalDetailIsVisible" title="详情" :maskClosable="false"
+        :keyboard="false" :footer="null" :cancel="onClickCloseModel">
+        <a-descriptions :colon="false" :column="2">
+            <a-descriptions-item :span="2" label="名称">{{ele.title}}</a-descriptions-item>
+            <a-descriptions-item :span="2" label="简介">{{ele.desc}}</a-descriptions-item>
+            <a-descriptions-item :span="2" label="关键词">{{ele.keywords}}</a-descriptions-item>
+            <a-descriptions-item label="收藏时间">{{ele.created_at}}</a-descriptions-item>
+            <a-descriptions-item label="排序">{{ ele.num_order }}</a-descriptions-item>
+            <a-descriptions-item :span="2" label="域名">{{ ele.link_origin }}</a-descriptions-item>
+            <a-descriptions-item :span="2" label="图标">
+                <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" fallback="/logo.png" />
+            </a-descriptions-item>
+          </a-descriptions>
+    </a-modal>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Ele } from 'types/types'
+
+export interface RefEleDetailModal {
+    onClickShowModal: (paramEle: Ele) => void
+}
+const emits = defineEmits(["close"])
+
+const modalDetailIsVisible = ref<boolean>(false)
+const ele = ref<Ele>({} as Ele)
+
+const onClickShowModal = (paramEle: Ele) => {
+    ele.value = paramEle
+    modalDetailIsVisible.value = true
+}
+
+const onClickCloseModel = (_e: any) => {
+    modalDetailIsVisible.value = false
+    ele.value = {} as Ele
+}
+
+defineExpose({ onClickShowModal })
+</script>

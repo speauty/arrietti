@@ -1,5 +1,5 @@
 <template>
-    <a-modal v-model:open="modalCreateIsVisible" title="我要收藏" wrapClassName="select-none" :maskClosable="false"
+    <a-modal v-model:open="modalCreateIsVisible" title="我要收藏" :maskClosable="false"
         :keyboard="false" :footer="null" :centered="true" okText="收藏" cancelText="取消">
         <a-spin :spinning="isSpinForForm" :tip="tipsForSpin">
             <a-form :label-col="{ style: { width: '100px' } }" ref="refCreateEle" :model="ele" :rules="rules"

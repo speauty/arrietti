@@ -1,6 +1,5 @@
 <template>
-    <div
-        class="w-full h-full overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-track-rounded-full scrollbar-thumb-primary/80 scrollbar-track-primary/20">
+    <div class="w-full h-full">
         <div v-if="listEle?.length" class="flex flex-wrap gap-3">
             <EleBlockUI v-for="ele in listEle" :ele="ele" @delete="onEmitDeleteForEle" />
         </div>
@@ -9,14 +8,14 @@
                 <template #description>
                     <span class="text-xs text-slate-500">暂无收藏站点，请点击“我要收藏”进行创建</span>
                 </template>
-                <a-button class="hover:animate-bounce" type="primary" @click="onClickShowModal">我要收藏</a-button>
+                <a-button class="hover:animate-bounce" type="primary" @click="onClickShowCreateModal">我要收藏</a-button>
             </a-empty>
         </div>
-        <a-float-button-group trigger="hover" type="primary" tooltip="快捷导航" :style="{ bottom: '24px', right: '24px' }">
+        <a-float-button-group trigger="click" type="primary" tooltip="快捷导航" :style="{ bottom: '24px', right: '24px' }">
             <template #icon>
                 <AppstoreOutlined />
             </template>
-            <a-float-button type="primary" tooltip="我要收藏" @click="onClickShowModal">
+            <a-float-button type="primary" tooltip="我要收藏" @click="onClickShowCreateModal">
                 <template #icon>
                     <PlusOutlined />
                 </template>
@@ -61,7 +60,7 @@ const onEmitDeleteForEle = (_eleId: number) => {
     queryEleList()
 }
 
-const onClickShowModal = () => {
+const onClickShowCreateModal = () => {
     nextTick(() => refEleCreateModal.value?.onClickShowModal())
 }
 

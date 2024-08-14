@@ -1,1 +1,9 @@
-@import "tailwind.scss"
+@import "tailwind.scss";
+
+.ant-modal-wrap {
+    @apply custom-overflow-y;
+    @apply select-none;
+}
+.ant-modal { // 临时全局定义模态框距顶距离-20px
+    top: 20px;
+}
