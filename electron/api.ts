@@ -20,15 +20,14 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
             !ele?.desc && (ele.desc = "")
             !ele?.link_logo && (ele.link_logo = "")
             !ele?.num_order && (ele.num_order = 0)
-            db.get(`select count(*) as cnt from arrietti_ele where link_origin='${ele.link_origin}'`, (err :Error|null, result: any): void => {
+            db.get('select count(*) as cnt from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => {
                 err && reject(err)
                 if (result?.cnt > 0) reject(new Error("当前站点已存在"))
             })
             .run(
-                `insert into arrietti_ele (title,desc,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) values ('${ele.title}','${ele.desc}','${ele.link_logo}','${ele.link}','${ele.link_origin}',${ele.num_order},'${ele.is_accessible}','${ele.created_at}','${ele.updated_at}')`,
-                (err => {
-                    err?reject(err):resolve(true)
-                })
+                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at],
+                (err => err?reject(err):resolve(true))
             )
         }).catch((err: Error) => reject(err))
     })
@@ -37,12 +36,9 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
 export const eleList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
     return new Promise<string|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
-            db.all(
+            db.all<Ele>(
                 "select * from arrietti_ele order by num_order desc, id desc",
-                ((err: Error|null, raws: unknown[]) => {
-                    err && reject(err)
-                    resolve(JSON.stringify(raws))
-                })
+                ((err: Error|null, raws: Ele[]) => err?reject(err):resolve(JSON.stringify(raws)))
             )
         }).catch(err => reject(err))
     })
@@ -52,11 +48,8 @@ export const eleDelete = (_event: IpcMainInvokeEvent, eleId: number): Promise<bo
     return new Promise<boolean|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
             db.run(
-                `delete from arrietti_ele where id=${eleId}`,
-                ((err: Error|null) => {
-                    err && reject(err)
-                    resolve(true)
-                })
+                'delete from arrietti_ele where id=?', [eleId],
+                ((err: Error|null) => err?reject(err):resolve(true))
             )
         }).catch(err => reject(err))
     })

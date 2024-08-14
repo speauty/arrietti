@@ -4,6 +4,7 @@ import {
   verbose,
 } from 'sqlite3'
 
+// #refer: https://github.com/TryGhost/node-sqlite3/wiki#documentation
 let database: Promise<Database>
 
 export const getDB = (filename: string = db): Promise<Database> => {
@@ -24,11 +25,12 @@ export const initDB = (): Promise<boolean> => {
 
 const db = resolve("arrietti.dat")
 
-const ddl = `
+const ddl: string = `
 create table if not exists arrietti_ele (
   id integer primary key autoincrement,
   title text not null,
   desc text not null default '',
+  keywords text not null default '',
   link_logo varchar(256) not null default '',
   link varchar(256) not null default '',
   link_origin varchar(64) not null default '',
