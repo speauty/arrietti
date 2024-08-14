@@ -62,7 +62,12 @@ const rules: Record<string, Rule[]> = {
 };
 
 const onClickToHack = (link: string) => {
-    ele.value = { link: link, num_order: ele.value.num_order } as Ele
+    if (ele.value.id) {
+        ele.value = { id: ele.value.id, link: link, num_order: ele.value.num_order } as Ele
+    } else {
+        ele.value = { link: link, num_order: ele.value.num_order } as Ele
+    }
+    
     if (!link) return
     try {
         const linkParsed = new URL(link)
