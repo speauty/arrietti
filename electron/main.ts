@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { menus } from './config'
 import { registerApis } from './api'
-import { initDB } from './db/db'
+import { getDB, initDB } from './db/db'
+import { Database } from 'sqlite3'
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -51,6 +52,7 @@ function createWindow() {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  getDB().then((db: Database) => db.close())
   if (process.platform !== 'darwin') {
     app.quit()
     win = null
