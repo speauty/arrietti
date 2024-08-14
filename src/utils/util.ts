@@ -5,10 +5,16 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
     let ele = {} as Ele
     const $ = cheerio.load(sourceCode)
     ele.title = $('title').text()
-    ele.desc = $('meta[name="description"]').attr("content") as unknown as string
-    let ico = $('link[rel="icon"]').attr("href")
-    if (!ico) {
-        ico = $('link[rel="shortcut icon"]').first().attr("href")
+    const keysForDesc: string[] = ["Description", "description"]
+    for (let idx = 0; idx < keysForDesc.length; idx++) {
+        ele.desc = $(`meta[name="${keysForDesc[idx]}"]`).attr("content") as unknown as string
+        if (ele.desc) break
+    }
+    const keysForIcon: string[] = ["icon", "shortcut icon"]
+    let ico: string = ""
+    for (let idx = 0; idx < keysForIcon.length; idx++) {
+        ico = $(`link[rel="${keysForIcon[idx]}"]`).attr("href") as unknown as string
+        if (ico) break
     }
     if (ico) {
         // https://doc.thinkphp.cn/v6_1/default.html 图标回显失败-304-涉及重定向, net请求问题
