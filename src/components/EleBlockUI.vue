@@ -9,7 +9,7 @@
         <div class="w-full text-sm truncate">{{ ele.title }}</div>
         <div :class="ele.keywords?.length?'line-clamp-2':'line-clamp-3'" class="w-full text-xs">{{ ele.desc }}</div>
         <div class="w-full text-xs truncate" v-if="ele.keywords?.length">
-          <a-tag v-for="keyword in ele.keywords" :bordered="false" :color="tagColors[Math.floor(Math.random() * 14)]">{{ keyword }}</a-tag>
+          <a-tag v-for="(keyword, idx) in ele.keywords" :bordered="false" :color="tagColors[idx%14]">{{ keyword }}</a-tag>
         </div>
       </div>
     </div>

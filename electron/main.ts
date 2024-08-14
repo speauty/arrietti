@@ -9,16 +9,10 @@ import { initDB } from './db/db'
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
 process.env.APP_ROOT = path.join(__dirname, '..')
+// @fixed: VM4 sandbox_bundle:2 Electron Security Warning (Insecure Resources) This renderer process loads resources using insecure protocols. This exposes users of this app to unnecessary security risks.
+// @link: https://segmentfault.com/q/1010000042608602/a-1020000042608604
+process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = "true"
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']

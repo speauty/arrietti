@@ -21,7 +21,7 @@
                 </template>
             </a-float-button>
         </a-float-button-group>
-        <EleCreateModal ref="refEleCreateModal" @close="onEmitCloseForEleCreate" />
+        <EleCreateModal ref="refEleCreateModal" @submit="onEmitSubmitForEleCreate" />
     </div>
 
 </template>
@@ -54,10 +54,13 @@ const queryEleList = () => {
     })
 }
 
-const onEmitCloseForEleCreate = queryEleList
+const onEmitSubmitForEleCreate = (ele: Ele) => {
+    console.log(ele)
+    listEle.value = [ele].concat(...listEle.value)
+}
 
-const onEmitDeleteForEle = (_eleId: number) => {
-    queryEleList()
+const onEmitDeleteForEle = (eleId: number) => {
+    listEle.value = listEle.value.filter((ele: Ele) => ele.id !== eleId)
 }
 
 const onClickShowCreateModal = () => {

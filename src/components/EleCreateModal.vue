@@ -39,6 +39,7 @@ import { getEleFromSourceCode, getErrorMessage } from '@/utils/util'
 import { Rule } from 'ant-design-vue/es/form/interface'
 import { MessageApi } from 'ant-design-vue/es/message'
 import dayjs from 'dayjs'
+import {clone} from "lodash"
 import { Ele } from 'types/types'
 import { getCurrentInstance, ref } from 'vue'
 
@@ -46,7 +47,7 @@ export interface RefEleCreateModal {
     onClickShowModal: () => void
 }
 
-const emits = defineEmits(["close"])
+const emits = defineEmits(["submit"])
 
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 const modalCreateIsVisible = ref<boolean>(false)
@@ -105,8 +106,8 @@ const onClickSubmit = () => {
                 return
             }
             message.success("收藏成功", 1.5, () => {
+                emits("submit", clone(ele.value))
                 onClickCancel()
-                emits("close")
             })
         }).catch((err: Error) => {
             message.error(getErrorMessage(err))

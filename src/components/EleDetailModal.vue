@@ -6,7 +6,7 @@
             <a-descriptions-item :span="2" label="简介" v-if="ele.desc">{{ele.desc}}</a-descriptions-item>
             <a-descriptions-item :span="2" label="关键词" v-if="ele.keywords?.length">
                 <div class="w-full flex flex-wrap gap-1 items-center">
-                    <a-tag v-for="keyword in ele.keywords" :bordered="false" :color="tagColors[Math.floor(Math.random() * 14)]">{{ keyword }}</a-tag>
+                    <a-tag v-for="(keyword, idx) in ele.keywords" :bordered="false" :color="tagColors[idx%14]">{{ keyword }}</a-tag>
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="收藏时间">{{ele.created_at}}</a-descriptions-item>
