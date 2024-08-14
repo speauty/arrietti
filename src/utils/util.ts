@@ -11,8 +11,8 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
         ico = $('link[rel="shortcut icon"]').first().attr("href")
     }
     if (ico) {
-        // https://doc.thinkphp.cn/v6_1/default.html 图标回显失败 前缀blob:
-        // https://www.bilibili.com/ 图标回显失败
+        // https://doc.thinkphp.cn/v6_1/default.html 图标回显失败-304-涉及重定向, net请求问题
+        // https://www.bilibili.com/ 图标回显失败-403-跨域
         if (!ico.includes("base64,") && !ico.startsWith("//") && !ico.includes("https://") && !ico.includes("http://")) {
             ico[0] !== "/" && (ico = `/${ico}`)
             ico = `${origin}${ico}`
