@@ -1,10 +1,10 @@
 <template>
-    <div class="w-full h-full">
+    <div ref="context" class="w-full h-full custom-overflow-y">
         <div v-if="listEle?.length" class="flex flex-wrap gap-3">
             <EleBlockUI v-for="ele in listEle" :ele="ele" @update="onEmitUpdateForEle" @delete="onEmitDeleteForEle" />
         </div>
         <div v-else class="w-full h-full flex items-center justify-center ">
-            <a-empty image="/logo.png" >
+            <a-empty image="/logo.png">
                 <template #description>
                     <span class="text-xs text-slate-500">暂无收藏站点，请点击“我要收藏”进行创建</span>
                 </template>
@@ -36,15 +36,18 @@ import { AppstoreOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleFormModal, { RefEleFormModal } from '@/components/EleFormModal.vue'
 import { Ele } from 'types/types'
-import { getCurrentInstance, nextTick, onMounted, ref } from 'vue'
+import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
 import { getErrorMessage } from '@/utils/util'
+import { throttle } from "lodash"
 
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 
 const listEle = ref<Ele[]>([] as Ele[])
 
 const refEleFormModal = ref<RefEleFormModal | null>(null)
+
+const context = ref()
 
 const queryEleList = () => {
     listEle.value = []
@@ -60,7 +63,6 @@ const queryEleList = () => {
 }
 
 const onEmitSubmitForEleCreate = (ele: Ele) => {
-    console.log(ele)
     listEle.value = [ele].concat(...listEle.value)
 }
 
@@ -80,8 +82,23 @@ const onClickShowEleFormModal = () => {
     nextTick(() => refEleFormModal.value?.onClickShowModal(null))
 }
 
+const onEventScroll = (event: any) => { // @todo 存在问题
+    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
+        throttle(function ():void { // 节流处理
+            // message.info("到底了, 可以加载新数据了...如果有的话")
+            console.log("到底了......debounce")
+        }, 1.5e3)
+        console.log("到底了")
+    }
+}
+
 onMounted(() => {
+    context.value?.addEventListener("scroll", onEventScroll)
     queryEleList()
+})
+
+onUnmounted(() => {
+    context.value?.removeEventListener('scroll', onEventScroll)
 })
 
 </script>
