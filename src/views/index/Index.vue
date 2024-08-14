@@ -4,12 +4,12 @@
         <div v-if="listEle?.length" class="flex flex-wrap gap-3">
             <EleBlockUI v-for="ele in listEle" :ele="ele" @delete="onEmitDeleteForEle" />
         </div>
-        <div v-else class="w-full h-full flex items-center justify-center">
+        <div v-else class="w-full h-full flex items-center justify-center ">
             <a-empty image="/logo.png" >
                 <template #description>
                     <span class="text-xs text-slate-500">暂无收藏站点，请点击“我要收藏”进行创建</span>
                 </template>
-                <a-button type="primary" @click="onClickShowModal">我要收藏</a-button>
+                <a-button class="hover:animate-bounce" type="primary" @click="onClickShowModal">我要收藏</a-button>
             </a-empty>
         </div>
         <a-float-button-group trigger="hover" type="primary" tooltip="快捷导航" :style="{ bottom: '24px', right: '24px' }">
