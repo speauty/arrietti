@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, app } from "electron"
+import { BrowserWindow, dialog, app, shell } from "electron"
 
 const isMac = process.platform === 'darwin'
 
@@ -13,6 +13,7 @@ export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOp
         {
             label: "帮助(H)(&H)", submenu: [
                 { label: "刷新", role: "forceReload" },
+                { label: "反馈", click: () => shell.openExternal("https://github.com/speauty/arrietti/issues/new") },
                 { label: "关于", click: () => dialogForAbout(win) },
             ]
         },
@@ -32,6 +33,7 @@ export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOp
                 { label: "刷新", role: "reload" },
                 { label: "强制刷新", role: "forceReload" },
                 { label: "调试面板", role: "toggleDevTools" },
+                { label: "反馈", click: () => shell.openExternal("https://github.com/speauty/arrietti/issues/new") },
                 { label: "关于", click: () => dialogForAbout(win) },
             ]
         },
