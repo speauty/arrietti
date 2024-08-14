@@ -11,7 +11,7 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
         ico = $('link[rel="shortcut icon"]').first().attr("href")
     }
     if (ico) {
-        if (!ico.includes("base64,") && !(ico.includes("https://") || ico.includes("http://"))) {
+        if (!ico.includes("base64,") && !ico.startsWith("//") && !ico.includes("https://") && !ico.includes("http://")) {
             ico[0] !== "/" && (ico = `/${ico}`)
             ico = `${origin}${ico}`
         }
