@@ -16,15 +16,14 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
         ico = $(`link[rel="${keysForIcon[idx]}"]`).attr("href") as unknown as string
         if (ico) break
     }
-    if (ico) {
-        // https://doc.thinkphp.cn/v6_1/default.html 图标回显失败-304-涉及重定向, net请求问题
-        // https://www.bilibili.com/ 图标回显失败-403-跨域
-        if (!ico.includes("base64,") && !ico.startsWith("//") && !ico.includes("https://") && !ico.includes("http://")) {
-            ico[0] !== "/" && (ico = `/${ico}`)
-            ico = `${origin}${ico}`
-        }
-        ele.link_logo = ico
+    !ico && (ico = "favicon.ico")
+    // https://doc.thinkphp.cn/v6_1/default.html 图标回显失败-304-涉及重定向, net请求问题
+    // https://www.bilibili.com/ 图标回显失败-403-跨域
+    if (!ico.includes("base64,") && !ico.startsWith("//") && !ico.includes("https://") && !ico.includes("http://")) {
+        ico[0] !== "/" && (ico = `/${ico}`)
+        ico = `${origin}${ico}`
     }
+    ele.link_logo = ico
     const keywords = $('meta[name="keywords"]').attr("content")
     if (keywords) {
         let charSplited = ""
@@ -32,6 +31,8 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
             charSplited = ','
         } else if (keywords.includes("，")) {
             charSplited = '，'
+        } else if (keywords.includes(" ")) {
+            charSplited = ' '
         }
         ele.keywords = charSplited?keywords.split(charSplited):[keywords]
     }
