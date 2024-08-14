@@ -7,8 +7,10 @@
       </div>
       <div class="h-full w-48 flex flex-col gap-1 overflow-hidden">
         <div class="w-full text-sm truncate">{{ ele.title }}</div>
-        <div class="w-full text-xs line-clamp-2">{{ ele.desc }}</div>
-        <div class="w-full text-xs truncate" v-if="ele.keywords?.length">{{ ele.keywords }}</div>
+        <div :class="ele.keywords?.length?'line-clamp-2':'line-clamp-3'" class="w-full text-xs">{{ ele.desc }}</div>
+        <div class="w-full text-xs truncate" v-if="ele.keywords?.length">
+          <a-tag v-for="keyword in ele.keywords" :bordered="false" :color="tagColors[Math.floor(Math.random() * 14)]">{{ keyword }}</a-tag>
+        </div>
       </div>
     </div>
     <template #overlay>
@@ -31,6 +33,10 @@ const emits = defineEmits(["delete"])
 const props = withDefaults(defineProps<{
   ele: Ele
 }>(), {})
+const tagColors: string[] = [
+    'success', 'error', 'warning', 'magenta', 'red', 'volcano', 'orange', 'gold', 'lime',
+    'green', 'cyan', 'blue', 'geekblue', 'purple'
+]
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 const refEleDetailModal = ref<RefEleDetailModal | null>(null)
 const onClickShowDetailModal = () => {

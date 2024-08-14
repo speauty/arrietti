@@ -39,7 +39,15 @@ export const eleList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
         getDB().then((db: Database) => {
             db.all<Ele>(
                 "select * from arrietti_ele order by num_order desc, id desc",
-                ((err: Error|null, raws: Ele[]) => err?reject(err):resolve(JSON.stringify(raws)))
+                ((err: Error|null, raws: Ele[]) => {
+                    err&&reject(err)
+                    for (let idx = 0; idx < raws.length; idx++) {
+                        if (typeof raws[idx].keywords === "string") {
+                            raws[idx].keywords = raws[idx].keywords?(raws[idx].keywords as unknown as string).split(","):[]
+                        }
+                    }
+                    resolve(JSON.stringify(raws))
+                })
             )
         }).catch(err => reject(err))
     })
