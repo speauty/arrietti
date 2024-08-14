@@ -16,10 +16,12 @@
     <template #overlay>
       <a-menu>
         <a-menu-item key="detail" @click="onClickShowDetailModal">详情</a-menu-item>
+        <a-menu-item key="update" @click="onClickShowEleFormModal">更新</a-menu-item>
         <a-menu-item key="delete" @click="onClickDelete">删除</a-menu-item>
       </a-menu>
     </template>
   </a-dropdown>
+  <EleFormModal ref="refEleFormModal" @submit="onEmitSubmitForEleUpdate"/>
   <EleDetailModal ref="refEleDetailModal" />
 </template>
 <script setup lang="ts">
@@ -27,9 +29,11 @@ import { getErrorMessage } from '@/utils/util';
 import { MessageApi } from 'ant-design-vue/es/message'
 import { Ele } from 'types/types'
 import { getCurrentInstance, nextTick, ref } from 'vue'
-import EleDetailModal, { RefEleDetailModal } from './EleDetailModal.vue';
+import EleFormModal, { RefEleFormModal } from './EleFormModal.vue'
+import EleDetailModal, { RefEleDetailModal } from './EleDetailModal.vue'
+import { clone } from 'lodash'
 
-const emits = defineEmits(["delete"])
+const emits = defineEmits(["delete", "update"])
 const props = withDefaults(defineProps<{
   ele: Ele
 }>(), {})
@@ -38,9 +42,16 @@ const tagColors: string[] = [
     'green', 'cyan', 'blue', 'geekblue', 'purple'
 ]
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
-const refEleDetailModal = ref<RefEleDetailModal | null>(null)
+
+const refEleFormModal = ref<RefEleFormModal|null>(null)
+  const onClickShowEleFormModal = () => {
+  nextTick(() => refEleFormModal.value?.onClickShowModal(clone(props.ele)))
+}
+const onEmitSubmitForEleUpdate = (ele: Ele) => emits("update", ele)
+
+const refEleDetailModal = ref<RefEleDetailModal|null>(null)
 const onClickShowDetailModal = () => {
-  nextTick(() => refEleDetailModal.value?.onClickShowModal(props.ele))
+  nextTick(() => refEleDetailModal.value?.onClickShowModal(clone(props.ele)))
 }
 
 const onClickToOpenInBrower = () => {

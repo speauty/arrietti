@@ -26,6 +26,7 @@ interface API {
   hackByUrl: (url: string) => Promise<any>,
   eleCreate: (rawEle: string) => Promise<boolean|Error>,
   eleList: () => Promise<string|Error>,
+  eleUpdate: (rawEle: string) => Promise<boolean|Error>,
   eleDelete: (eleId: number) => Promise<boolean|Error>,
 }
 

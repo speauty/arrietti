@@ -1,8 +1,8 @@
 <template>
-    <a-modal v-model:open="modalCreateIsVisible" title="我要收藏" :maskClosable="false"
-        :keyboard="false" :footer="null" :centered="true" okText="收藏" cancelText="取消">
+    <a-modal v-model:open="modalIsVisible" :title="ele.id?'我要更新':'我要收藏'" :maskClosable="false"
+        :keyboard="false" :footer="null" :centered="true">
         <a-spin :spinning="isSpinForForm" :tip="tipsForSpin">
-            <a-form :label-col="{ style: { width: '100px' } }" ref="refCreateEle" :model="ele" :rules="rules"
+            <a-form :label-col="{ style: { width: '100px' } }" ref="refFormEle" :model="ele" :rules="rules"
                 :colon="false">
                 <a-form-item label="站点链接" name="link">
                     <a-input-search allow-clear v-model:value="ele.link" placeholder="请输入站点链接" @search="onClickToHack"
@@ -26,7 +26,7 @@
                 <a-form-item>
                     <div class="w-full flex items-center justify-center gap-2">
                         <a-button @click="onClickCancel">取消</a-button>
-                        <a-button type="primary" @click="onClickSubmit">收藏</a-button>
+                        <a-button type="primary" @click="onClickSubmit">{{ele.id?'更新':'收藏'}}</a-button>
                     </div>
                 </a-form-item>
             </a-form>
@@ -43,16 +43,16 @@ import {clone} from "lodash"
 import { Ele } from 'types/types'
 import { getCurrentInstance, ref } from 'vue'
 
-export interface RefEleCreateModal {
-    onClickShowModal: () => void
+export interface RefEleFormModal {
+    onClickShowModal: (paramEle: Ele|null) => void
 }
 
 const emits = defineEmits(["submit"])
 
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
-const modalCreateIsVisible = ref<boolean>(false)
+const modalIsVisible = ref<boolean>(false)
 
-const refCreateEle = ref()
+const refFormEle = ref()
 const ele = ref<Ele>({ link: "", num_order: 0 } as Ele)
 const isSpinForForm = ref<boolean>(false)
 const tipsForSpin = ref<string>("")
@@ -88,18 +88,33 @@ const onClickToHack = (link: string) => {
 }
 
 const onClickCancel = () => {
-    modalCreateIsVisible.value = false
-    refCreateEle.value.resetFields()
+    modalIsVisible.value = false
+    refFormEle.value.resetFields()
 }
 
 const onClickSubmit = () => {
-    refCreateEle.value.validate().then(() => {
+    refFormEle.value.validate().then(() => {
         const now = dayjs().format("YYYY-MM-DD HH:mm:ss")
-        ele.value.created_at = now
+        if (!ele.value.id) {
+            ele.value.created_at = now
+            ele.value.is_accessible = true
+        }
         ele.value.updated_at = now
-        ele.value.is_accessible = true
         isSpinForForm.value = true
-        window.api.eleCreate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
+        if (ele.value.id) {
+            window.api.eleUpdate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
+            if (result === false || result instanceof Error) {
+                const msg: string = result instanceof Error ? getErrorMessage(result) : "更新失败, 请稍后重试"
+                message.error(msg)
+                return
+            }
+            message.success("更新成功", 1.5, () => {
+                emits("submit", clone(ele.value))
+                onClickCancel()
+            })
+        }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
+        } else {
+            window.api.eleCreate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
             if (result === false || result instanceof Error) {
                 const msg: string = result instanceof Error ? getErrorMessage(result) : "收藏失败, 请稍后重试"
                 message.error(msg)
@@ -109,16 +124,16 @@ const onClickSubmit = () => {
                 emits("submit", clone(ele.value))
                 onClickCancel()
             })
-        }).catch((err: Error) => {
-            message.error(getErrorMessage(err))
-        }).finally(() => isSpinForForm.value = false)
+        }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
+        }
     }).catch((err: Error) => {
         err instanceof Error && message.error(err.message)
     })
 }
 
-const onClickShowModal = () => {
-    modalCreateIsVisible.value = true
+const onClickShowModal = (paramEle: Ele|null) => {
+    paramEle && (ele.value = paramEle)
+    modalIsVisible.value = true
 }
 
 defineExpose({ onClickShowModal })

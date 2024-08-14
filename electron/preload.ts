@@ -25,5 +25,6 @@ contextBridge.exposeInMainWorld('api',{
   hackByUrl: (url: string) => ipcRenderer.invoke('api:hackByUrl', url),
   eleCreate: (rawEle: string) => ipcRenderer.invoke("api:eleCreate", rawEle),
   eleList: () => ipcRenderer.invoke("api:eleList"),
+  eleUpdate: (rawEle: string) => ipcRenderer.invoke("api:eleUpdate", rawEle),
   eleDelete: (eleId: number) => ipcRenderer.invoke("api:eleDelete", eleId),
 })
