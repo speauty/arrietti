@@ -15,9 +15,14 @@
             <template #icon>
                 <AppstoreOutlined />
             </template>
+            <!-- <a-float-button type="primary" tooltip="我要分类" @click="onClickShowCreateModal">
+                <template #icon>
+                    <FolderOpenOutlined />
+                </template>
+            </a-float-button> -->
             <a-float-button type="primary" tooltip="我要收藏" @click="onClickShowCreateModal">
                 <template #icon>
-                    <PlusOutlined />
+                    <GlobalOutlined />
                 </template>
             </a-float-button>
         </a-float-button-group>
@@ -27,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { AppstoreOutlined, PlusOutlined } from '@ant-design/icons-vue'
+import { AppstoreOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleCreateModal, { RefEleCreateModal } from '@/components/EleCreateModal.vue'
 import { Ele } from 'types/types'
