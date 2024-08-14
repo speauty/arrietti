@@ -12,7 +12,7 @@ export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOp
         },
         {
             label: "帮助(H)(&H)", submenu: [
-                { label: "刷新", role: "reload" },
+                { label: "刷新", role: "forceReload" },
                 { label: "关于", click: () => dialogForAbout(win) },
             ]
         },
