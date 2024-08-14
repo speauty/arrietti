@@ -21,7 +21,7 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
     if (keywords) {
         let charSplited = ""
         if (keywords.includes(',')) {
-            charSplited = '.'
+            charSplited = ','
         } else if (keywords.includes("，")) {
             charSplited = '，'
         }
