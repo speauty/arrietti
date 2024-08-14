@@ -10,12 +10,20 @@ export const getEleFromSourceCode = (origin: string, sourceCode: string): Ele =>
     if (!ico) {
         ico = $('link[rel="shortcut icon"]').first().attr("href")
     }
-    if (ico) {
-        if (!(ico.includes("https://") || ico.includes("http://"))) ico = `${origin}${ico}`
+    if (ico) { // base64,
+        if (!ico.includes("base64,") && !(ico.includes("https://") || ico.includes("http://"))) ico = `${origin}${ico}`
         ele.link_logo = ico
     }
     const keywords = $('meta[name="keywords"]').attr("content")
-    if (keywords) ele.keywords = keywords.split(",")
+    if (keywords) {
+        let charSplited = ""
+        if (keywords.includes(',')) {
+            charSplited = '.'
+        } else if (keywords.includes("，")) {
+            charSplited = '，'
+        }
+        ele.keywords = charSplited?keywords.split(charSplited):[keywords]
+    }
     return ele
 }
 
