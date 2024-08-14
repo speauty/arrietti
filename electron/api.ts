@@ -14,8 +14,8 @@ export const registerApis = () => {
     ipcMain.handle('api:eleDelete', eleDelete)
 }
 
-export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<boolean|Error> => {
-    return new Promise<boolean>((resolve, reject) => {
+export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<number|Error> => {
+    return new Promise<number>((resolve, reject) => {
         getDB().then((db: Database) => {
             let ele = JSON.parse(rawEle) as Ele
             !ele?.keywords && (ele.keywords = [])
@@ -29,8 +29,9 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
             .run(
                 'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                 [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at],
-                (err => err?reject(err):resolve(true))
+                (err: Error|null) => err&&reject(err)
             )
+            .get('select id from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
         }).catch((err: Error) => reject(err))
     })
 }

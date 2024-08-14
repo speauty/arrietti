@@ -114,14 +114,16 @@ const onClickSubmit = () => {
             })
         }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
         } else {
-            window.api.eleCreate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
-            if (result === false || result instanceof Error) {
+            window.api.eleCreate(JSON.stringify(ele.value)).then((result: number | Error) => {
+            if (!result || result instanceof Error) {
                 const msg: string = result instanceof Error ? getErrorMessage(result) : "收藏失败, 请稍后重试"
                 message.error(msg)
                 return
             }
+            let eleCloned: Ele = clone(ele.value)
+            eleCloned.id = result
             message.success("收藏成功", 1.5, () => {
-                emits("submit", clone(ele.value))
+                emits("submit", eleCloned)
                 onClickCancel()
             })
         }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
