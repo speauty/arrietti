@@ -1,6 +1,6 @@
 /** 接口-网路请求 */
 import { ipcMain, IpcMainInvokeEvent, shell, net } from 'electron'
-import { Ele } from 'types/types'
+import { Ele, Page } from 'types/types'
 import { getDB } from './db/db'
 import type { Database } from 'sqlite3'
 
@@ -36,11 +36,15 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<n
     })
 }
 
-export const eleList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
+export const eleList = (_event: IpcMainInvokeEvent, rawPage: string): Promise<string|Error> => {
+    const page: Page = rawPage?JSON.parse(rawPage) as Page:{} as Page
+    (!page.page || page.page < 1) && (page.page = 1);
+    (!page.page_size || page.page_size < 10) && (page.page_size = 100);
     return new Promise<string|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
             db.all<Ele>(
-                "select * from arrietti_ele order by num_order desc, id desc",
+                "select * from arrietti_ele order by num_order desc, id desc limit ?, ?",
+                [( page.page - 1) * page.page_size, page.page_size],
                 ((err: Error|null, raws: Ele[]) => {
                     err&&reject(err)
                     for (let idx = 0; idx < raws.length; idx++) {

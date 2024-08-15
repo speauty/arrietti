@@ -1,7 +1,7 @@
 <template>
     <div ref="context" class="w-full h-full custom-overflow-y">
         <div v-if="listEle?.length" class="flex flex-wrap gap-3">
-            <EleBlockUI v-for="ele in listEle" :ele="ele" @update="onEmitUpdateForEle" @delete="onEmitDeleteForEle" />
+                <EleBlockUI v-for="ele in listEle" :ele="ele" @update="onEmitUpdateForEle" @delete="onEmitDeleteForEle" />
         </div>
         <div v-else class="w-full h-full flex items-center justify-center ">
             <a-empty image="/logo.png">
@@ -28,35 +28,43 @@
         </a-float-button-group>
         <EleFormModal ref="refEleFormModal" @submit="onEmitSubmitForEleCreate" />
     </div>
-
 </template>
 
 <script setup lang="ts">
 import { AppstoreOutlined, GlobalOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleFormModal, { RefEleFormModal } from '@/components/EleFormModal.vue'
-import { Ele } from 'types/types'
+import { Ele, Page } from 'types/types'
 import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
 import { getErrorMessage } from '@/utils/util'
 import { throttle } from "lodash"
 
+const context = ref()
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
-
 const listEle = ref<Ele[]>([] as Ele[])
-
+const page = ref<Page>({ page: 1, page_size: 10 } as Page)
+const hasMore = ref<boolean>(true)
 const refEleFormModal = ref<RefEleFormModal | null>(null)
 
-const context = ref()
-
 const queryEleList = () => {
-    listEle.value = []
-    window.api.eleList().then((result: Error | string) => {
+    if (!hasMore.value) {
+        message.warn("暂无更多收藏")
+        return
+    }
+    window.api.eleList(JSON.stringify(page.value)).then((result: Error | string) => {
         if (result instanceof Error) {
             message.error(getErrorMessage(result))
             return
         }
-        listEle.value = JSON.parse(result) as Ele[]
+        const eles = JSON.parse(result) as Ele[]
+        if (eles.length) {
+            listEle.value.push(...eles)
+            page.value.page++
+            hasMore.value = eles.length >= page.value.page_size
+        } else {
+            hasMore.value = false
+        }
     }).catch((err: Error) => {
         message.error(getErrorMessage(err))
     })
@@ -84,16 +92,12 @@ const onClickShowEleFormModal = () => {
 
 const onEventScroll = (event: any) => { // @todo 存在问题
     if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
-        throttle(function ():void { // 节流处理
-            // message.info("到底了, 可以加载新数据了...如果有的话")
-            console.log("到底了......debounce")
-        }, 1.5e3)
-        console.log("到底了")
+        queryEleList()
     }
 }
 
 onMounted(() => {
-    context.value?.addEventListener("scroll", onEventScroll)
+    context.value?.addEventListener("scroll", throttle(onEventScroll, 1e3))
     queryEleList()
 })
 

@@ -11,3 +11,8 @@ export interface Ele {
     created_at: string
     updated_at: string
 }
+
+export interface Page {
+    page: number
+    page_size: number
+}
