@@ -52,7 +52,7 @@ const refCategoryFormModal = ref<RefCategoryFormModal|null>(null)
 
 const queryEleList = () => {
     if (!hasMore.value) {
-        message.warn("暂无更多收藏")
+        // message.warn("暂无更多收藏")
         return
     }
     window.api.eleList(JSON.stringify(page.value)).then((result: Error | string) => {
