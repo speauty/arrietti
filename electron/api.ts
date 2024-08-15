@@ -39,7 +39,7 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<n
 export const eleList = (_event: IpcMainInvokeEvent, rawPage: string): Promise<string|Error> => {
     const page: Page = rawPage?JSON.parse(rawPage) as Page:{} as Page
     (!page.page || page.page < 1) && (page.page = 1);
-    (!page.page_size || page.page_size < 10) && (page.page_size = 100);
+    (!page.page_size || page.page_size < 100) && (page.page_size = 100);
     return new Promise<string|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
             db.all<Ele>(

@@ -43,7 +43,7 @@ import { throttle } from "lodash"
 const context = ref()
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 const listEle = ref<Ele[]>([] as Ele[])
-const page = ref<Page>({ page: 1, page_size: 10 } as Page)
+const page = ref<Page>({ page: 1, page_size: 100 } as Page)
 const hasMore = ref<boolean>(true)
 const refEleFormModal = ref<RefEleFormModal | null>(null)
 
