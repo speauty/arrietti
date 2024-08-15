@@ -24,11 +24,6 @@ export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOp
             ]
         },
         {
-            label: "首选项(R)(&R)", submenu: [
-                { label: "首页", click: () => sendRouteToRenderer(win, "index") },
-            ]
-        },
-        {
             label: "帮助(H)(&H)", submenu: [
                 { label: "刷新", role: "reload" },
                 { label: "强制刷新", role: "forceReload" },
@@ -40,9 +35,9 @@ export const menus = (win: BrowserWindow): Array<(Electron.MenuItemConstructorOp
     ]
 }
 
-function sendRouteToRenderer(win: BrowserWindow, routeName: string) {
-    win?.webContents.send('route-change', routeName)
-}
+// function sendRouteToRenderer(win: BrowserWindow, routeName: string) {
+//     win?.webContents.send('route-change', routeName)
+// }
 
 const dialogForAbout = (win: BrowserWindow) => {
     dialog.showMessageBox(win, {
