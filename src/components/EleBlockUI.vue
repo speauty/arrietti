@@ -38,7 +38,6 @@ const emits = defineEmits(["delete", "update"])
 const props = withDefaults(defineProps<{
   ele: Ele
 }>(), {})
-props.ele.id == 47 && console.log(props.ele)
 const tagColors: string[] = [
     'success', 'error', 'warning', 'magenta', 'red', 'volcano', 'orange', 'gold', 'lime',
     'green', 'cyan', 'blue', 'geekblue', 'purple'

@@ -10,10 +10,13 @@
                 <a-form-item label="排序" tooltip="值越大, 越靠前" name="num_order">
                     <a-input v-model:value="category.num_order" placeholder="请输入排序"/>
                 </a-form-item>
-                <a-form-item>
+                <a-form-item class="mb-0">
                     <div class="w-full flex items-center justify-center gap-2">
                         <a-button @click="onClickCancel">取消</a-button>
                         <a-button type="primary" @click="onClickSubmit">{{category.id?'更新':'保存'}}</a-button>
+                    </div>
+                    <div class="mt-2 w-full flex items-center justify-center">
+                        <a-button type="link" size="small">进入管理</a-button>
                     </div>
                 </a-form-item>
             </a-form>

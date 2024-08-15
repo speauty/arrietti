@@ -27,7 +27,7 @@
                     <a-textarea v-model:value="ele.desc" :rows="2" :auto-size="{ minRows: 2, maxRows: 2 }"
                         placeholder="请输入站点简介" />
                 </a-form-item>
-                <a-form-item>
+                <a-form-item class="mb-0">
                     <div class="w-full flex items-center justify-center gap-2">
                         <a-button @click="onClickCancel">取消</a-button>
                         <a-button type="primary" @click="onClickSubmit">{{ ele.id ? '更新' : '收藏' }}</a-button>
