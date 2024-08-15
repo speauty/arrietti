@@ -48,7 +48,7 @@ import { Category, Ele } from 'types/types'
 import { getCurrentInstance, ref } from 'vue'
 
 export interface RefEleFormModal {
-    onClickShowModal: (paramEle: Ele | null) => void
+    open: (paramEle: Ele | null) => void
 }
 
 const emits = defineEmits(["submit"])
@@ -154,7 +154,7 @@ const onClickSubmit = () => {
     })
 }
 
-const onClickShowModal = (paramEle: Ele | null) => {
+const open = (paramEle: Ele | null) => {
     window.api.categoryList().then((result: string | Error) => {
         if (!result || result instanceof Error) {
             const msg: string = result instanceof Error ? getErrorMessage(result) : "获取分类失败, 请稍后重试"
@@ -167,5 +167,5 @@ const onClickShowModal = (paramEle: Ele | null) => {
     modalIsVisible.value = true
 }
 
-defineExpose({ onClickShowModal })
+defineExpose({ open })
 </script>

@@ -32,7 +32,7 @@ import { Ele } from 'types/types'
 import { getCurrentInstance, nextTick, ref } from 'vue'
 import EleFormModal, { RefEleFormModal } from './EleFormModal.vue'
 import EleDetailModal, { RefEleDetailModal } from './EleDetailModal.vue'
-import { clone } from 'lodash'
+import { cloneDeep } from 'lodash'
 
 const emits = defineEmits(["delete", "update"])
 const props = withDefaults(defineProps<{
@@ -45,12 +45,12 @@ const tagColors: string[] = [
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 const refEleFormModal = ref<RefEleFormModal|null>(null)
 const onClickShowEleFormModal = () => {
-  nextTick(() => refEleFormModal.value?.onClickShowModal(clone(props.ele)))
+  nextTick(() => refEleFormModal.value?.open(cloneDeep(props.ele)))
 }
 const onEmitSubmitForEleUpdate = (ele: Ele) => emits("update", ele)
 const refEleDetailModal = ref<RefEleDetailModal|null>(null)
 const onClickShowDetailModal = () => {
-  nextTick(() => refEleDetailModal.value?.onClickShowModal(clone(props.ele)))
+  nextTick(() => refEleDetailModal.value?.onClickShowModal(cloneDeep(props.ele)))
 }
 
 const onClickToOpenInBrower = () => {

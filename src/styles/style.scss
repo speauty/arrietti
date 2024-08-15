@@ -7,3 +7,15 @@
 .ant-modal { // 临时全局定义模态框距顶距离-20px
     top: 20px;
 }
+
+.drawer-category-manage {
+    .ant-drawer-header {
+        padding: 8px;
+        .ant-drawer-title {
+            font-size: 14px;
+        }
+    }
+    .ant-drawer-body {
+        padding: 8px;
+    }
+}

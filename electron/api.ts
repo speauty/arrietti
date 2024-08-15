@@ -29,17 +29,25 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<n
             !ele?.num_order && (ele.num_order = 0)
             db.get('select count(*) as cnt from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => {
                 err && reject(err)
-                if (result?.cnt > 0) reject(new Error("当前站点已存在"))
+                if (result?.cnt > 0) {
+                    reject(new Error("当前收藏已存在"))
+                } else {
+                    db.run(
+                        'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at,category_id,category_title) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                        [
+                            ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at,
+                            ele.category_id, ele.category_title,
+                        ],
+                        (err: Error|null) => {
+                            if (err) {
+                                reject(err)
+                            } else {
+                                db.get('select id from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
+                            }
+                        }
+                    )
+                }
             })
-            .run(
-                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at,category_id,category_title) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [
-                    ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at,
-                    ele.category_id, ele.category_title,
-                ],
-                (err: Error|null) => err&&reject(err)
-            )
-            .get('select id from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
         }).catch((err: Error) => reject(err))
     })
 }
@@ -77,13 +85,16 @@ export const eleUpdate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
             !ele?.num_order && (ele.num_order = 0)
             db.get('select count(*) as cnt from arrietti_ele where link_origin=? and id!=?', [ele.link_origin, ele.id], (err :Error|null, result: any): void => {
                 err && reject(err)
-                if (result?.cnt > 0) reject(new Error("当前站点已存在"))
+                if (result?.cnt > 0) {
+                    reject(new Error("当前收藏已存在"))
+                } else {
+                    db.run(
+                        'update arrietti_ele set title=?, desc=?, keywords=?, link_logo=?, link=?, link_origin=?, num_order=?, updated_at=?, category_id=?, category_title=? where id=?',
+                        [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.updated_at, ele.category_id, ele.category_title, ele.id],
+                        (err => err?reject(err):resolve(true))
+                    )
+                }
             })
-            .run(
-                'update arrietti_ele set title=?, desc=?, keywords=?, link_logo=?, link=?, link_origin=?, num_order=?, updated_at=?, category_id=?, category_title=? where id=?',
-                [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.updated_at, ele.category_id, ele.category_title, ele.id],
-                (err => err?reject(err):resolve(true))
-            )
         }).catch((err: Error) => reject(err))
     })
 }
@@ -106,14 +117,22 @@ export const categoryCreate = (_event: IpcMainInvokeEvent, rawCategory: string):
             !category?.num_order && (category.num_order = 0)
             db.get('select count(*) as cnt from arrietti_category where title=?', [category.title], (err :Error|null, result: any): void => {
                 err && reject(err)
-                if (result?.cnt > 0) reject(new Error("当前分类已存在"))
+                if (result?.cnt > 0) {
+                    reject(new Error("当前分类已存在"))
+                } else {
+                    db.run(
+                        'insert into arrietti_category (title,num_order,created_at,updated_at) values (?, ?, ?, ?)',
+                        [category.title, category.num_order, category.created_at, category.updated_at],
+                        (err: Error|null) => {
+                            if (err) {
+                                reject(err)
+                            } else {
+                                db.get('select id from arrietti_category where title=?', [category.title], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
+                            }
+                        }
+                    )
+                }
             })
-            .run(
-                'insert into arrietti_category (title,num_order,created_at,updated_at) values (?, ?, ?, ?)',
-                [category.title, category.num_order, category.created_at, category.updated_at],
-                (err: Error|null) => err&&reject(err)
-            )
-            .get('select id from arrietti_category where title=?', [category.title], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
         }).catch((err: Error) => reject(err))
     })
 }
@@ -139,13 +158,16 @@ export const categoryUpdate = (_event: IpcMainInvokeEvent, rawCategory: string):
             !category?.num_order && (category.num_order = 0)
             db.get('select count(*) as cnt from arrietti_category where title=? and id!=?', [category.title, category.id], (err :Error|null, result: any): void => {
                 err && reject(err)
-                if (result?.cnt > 0) reject(new Error("当前分类已存在"))
+                if (result?.cnt > 0) {
+                    reject(new Error("当前分类已存在"))
+                } else {
+                    db.run(
+                        'update arrietti_category set title=?, num_order=?, updated_at=? where id=?',
+                        [category.title, category.num_order, category.updated_at, category.id],
+                        (err => err?reject(err):resolve(true))
+                    ).run('update arrietti_ele set category_title = ? where category_id = ?', [category.title, category.id])
+                }
             })
-            .run(
-                'update arrietti_ele set title=?, num_order=?, updated_at=? where id=?',
-                [category.title, category.num_order, category.updated_at, category.id],
-                (err => err?reject(err):resolve(true))
-            )
         }).catch((err: Error) => reject(err))
     })
 }
@@ -153,10 +175,17 @@ export const categoryUpdate = (_event: IpcMainInvokeEvent, rawCategory: string):
 export const categoryDelete = (_event: IpcMainInvokeEvent, categoryId: number): Promise<boolean|Error> => {
     return new Promise<boolean|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
-            db.run(
-                'delete from arrietti_category where id=?', [categoryId],
-                ((err: Error|null) => err?reject(err):resolve(true))
-            )
+            db.get('select count(*) as cnt from arrietti_ele where category_id=?', [categoryId], (err :Error|null, result: any): void => {
+                err && reject(err)
+                if (result?.cnt > 0) {
+                    reject(new Error("当前分类下面存在收藏, 请手动转移或删除相应收藏"))
+                } else {
+                    db.run(
+                        'delete from arrietti_category where id=?', [categoryId],
+                        ((err: Error|null) => err?reject(err):resolve(true))
+                    )
+                }
+            })
         }).catch(err => reject(err))
     })
 }

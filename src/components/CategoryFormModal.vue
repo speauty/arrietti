@@ -8,15 +8,15 @@
                     <a-input v-model:value="category.title" placeholder="请输入名称" allow-clear :maxlength="4"/>
                 </a-form-item>
                 <a-form-item label="排序" tooltip="值越大, 越靠前" name="num_order">
-                    <a-input v-model:value="category.num_order" placeholder="请输入排序"/>
+                    <a-input v-model:value="category.num_order" placeholder="请输入排序" :maxlength="3"/>
                 </a-form-item>
                 <a-form-item class="mb-0">
                     <div class="w-full flex items-center justify-center gap-2">
                         <a-button @click="onClickCancel">取消</a-button>
                         <a-button type="primary" @click="onClickSubmit">{{category.id?'更新':'保存'}}</a-button>
                     </div>
-                    <div class="mt-2 w-full flex items-center justify-center">
-                        <a-button type="link" size="small">进入管理</a-button>
+                    <div v-if="!category.id" class="mt-2 w-full flex items-center justify-center">
+                        <a-button type="link" size="small" @click="onClickRedirect2Manage">进入管理</a-button>
                     </div>
                 </a-form-item>
             </a-form>
@@ -34,10 +34,10 @@ import { Category } from 'types/types'
 import { getCurrentInstance, ref } from 'vue'
 
 export interface RefCategoryFormModal {
-    onClickShowModal: (paramEle: Category|null) => void
+    open: (paramEle: Category|null) => void
 }
 
-const emits = defineEmits(["submit"])
+const emits = defineEmits(["submit", "manage"])
 
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
 const modalIsVisible = ref<boolean>(false)
@@ -95,10 +95,15 @@ const onClickSubmit = () => {
     })
 }
 
-const onClickShowModal = (paramCategory: Category|null) => {
+const open = (paramCategory: Category|null) => {
     paramCategory && (category.value = paramCategory)
     modalIsVisible.value = true
 }
 
-defineExpose({ onClickShowModal })
+const onClickRedirect2Manage = () => {
+    onClickCancel()
+    emits("manage")
+}
+
+defineExpose({ open })
 </script>

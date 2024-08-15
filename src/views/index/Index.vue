@@ -27,7 +27,8 @@
             </a-float-button>
         </a-float-button-group>
         <EleFormModal ref="refEleFormModal" @submit="onEmitSubmitForEleCreate" />
-        <CategoryFormModal ref="refCategoryFormModal" />
+        <CategoryFormModal ref="refCategoryFormModal" @manage="onEmitManageForCategory"/>
+        <CategoryManageDrawer ref="refCategoryManageDrawer" />
     </div>
 </template>
 
@@ -36,6 +37,7 @@ import { AppstoreOutlined, GlobalOutlined, FolderOpenOutlined } from '@ant-desig
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleFormModal, { RefEleFormModal } from '@/components/EleFormModal.vue'
 import CategoryFormModal, { RefCategoryFormModal } from '@/components/CategoryFormModal.vue'
+import CategoryManageDrawer, { RefCategoryManageDrawer } from '@/components/CategoryManageDrawer.vue'
 import { Ele, Page } from 'types/types'
 import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
@@ -49,6 +51,7 @@ const page = ref<Page>({ page: 1, page_size: 100 } as Page)
 const hasMore = ref<boolean>(true)
 const refEleFormModal = ref<RefEleFormModal|null>(null)
 const refCategoryFormModal = ref<RefCategoryFormModal|null>(null)
+const refCategoryManageDrawer = ref<RefCategoryManageDrawer|null>(null)
 
 const queryEleList = () => {
     if (!hasMore.value) {
@@ -90,11 +93,14 @@ const onEmitUpdateForEle = (ele: Ele) => {
 }
 
 const onClickShowEleFormModal = () => {
-    nextTick(() => refEleFormModal.value?.onClickShowModal(null))
+    nextTick(() => refEleFormModal.value?.open(null))
 }
 
 const onClickShowCategoryFormModal = () => {
-    nextTick(() => refCategoryFormModal.value?.onClickShowModal(null))
+    nextTick(() => refCategoryFormModal.value?.open(null))
+}
+const onEmitManageForCategory = () => {
+    nextTick(() => refCategoryManageDrawer.value?.open())
 }
 
 const onEventScroll = (event: any) => { // @todo 存在问题
