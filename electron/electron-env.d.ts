@@ -25,7 +25,7 @@ interface API {
   openUrlWithDefaultBrowser: (url: string) => void,
   hackByUrl: (url: string) => Promise<any>,
   eleCreate: (rawEle: string) => Promise<number|Error>,
-  eleList: (rawPage: string) => Promise<string|Error>,
+  eleList: (rawPage: string, rawEle: string) => Promise<string|Error>,
   eleUpdate: (rawEle: string) => Promise<boolean|Error>,
   eleDelete: (eleId: number) => Promise<boolean|Error>,
   categoryCreate: (rawCategory: string) => Promise<number|Error>,

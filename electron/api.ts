@@ -52,15 +52,26 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<n
     })
 }
 
-export const eleList = (_event: IpcMainInvokeEvent, rawPage: string): Promise<string|Error> => {
+export const eleList = (_event: IpcMainInvokeEvent, rawPage: string, rawEle: string): Promise<string|Error> => {
     const page: Page = rawPage?JSON.parse(rawPage) as Page:{} as Page
     (!page.page || page.page < 1) && (page.page = 1);
     (!page.page_size || page.page_size < 100) && (page.page_size = 100);
+    const ele: Ele = JSON.parse(rawEle) as Ele
+    let where: string[] = []
+    if (ele.title) where.push("title like $title")
+    if (ele.link) where.push("link like $link")
+    if (ele.desc) where.push("desc like $desc")
+    if (ele.category_id) where.push("category_id = $categoryId")
+    const rawWhere: string = where.length?"where "+where.join(" and ")+"":''
     return new Promise<string|Error>((resolve, reject) => {
         getDB().then((db: Database) => {
             db.all<Ele>(
-                "select * from arrietti_ele order by num_order desc, id desc limit ?, ?",
-                [( page.page - 1) * page.page_size, page.page_size],
+                `select * from arrietti_ele ${rawWhere} order by num_order desc, id desc limit $page, $pageSize`,
+                {
+                    $page: ( page.page - 1) * page.page_size, $pageSize: page.page_size,
+                    $title: ele.title?`%${ele.title}%`:undefined, $link: ele.link?`%${ele.link}%`:undefined, $desc: ele.desc?`%${ele.desc}%`:undefined,
+                    $categoryId: ele.category_id?ele.category_id:undefined,
+                },
                 ((err: Error|null, raws: Ele[]) => {
                     err&&reject(err)
                     for (let idx = 0; idx < raws.length; idx++) {

@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld('api',{
   openUrlWithDefaultBrowser: (url: string) => ipcRenderer.send('api:openUrlWithDefaultBrowser', url),
   hackByUrl: (url: string) => ipcRenderer.invoke('api:hackByUrl', url),
   eleCreate: (rawEle: string) => ipcRenderer.invoke("api:eleCreate", rawEle),
-  eleList: (rawPage: string) => ipcRenderer.invoke("api:eleList", rawPage),
+  eleList: (rawPage: string, rawEle: string) => ipcRenderer.invoke("api:eleList", rawPage, rawEle),
   eleUpdate: (rawEle: string) => ipcRenderer.invoke("api:eleUpdate", rawEle),
   eleDelete: (eleId: number) => ipcRenderer.invoke("api:eleDelete", eleId),
 

@@ -26,23 +26,30 @@
                 </template>
             </a-float-button>
         </a-float-button-group>
+        <a-float-button type="primary" tooltip="我要搜索" @click="onClickSearch" :style="{ bottom: '24px', left: '24px' }">
+            <template #icon>
+                <SearchOutlined />
+            </template>
+        </a-float-button>
         <EleFormModal ref="refEleFormModal" @submit="onEmitSubmitForEleCreate" />
+        <EleSearchModal ref="refEleSearchModal", @search="onEmitEleSearch" />
         <CategoryFormModal ref="refCategoryFormModal" @manage="onEmitManageForCategory"/>
         <CategoryManageDrawer ref="refCategoryManageDrawer" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { AppstoreOutlined, GlobalOutlined, FolderOpenOutlined } from '@ant-design/icons-vue'
+import { AppstoreOutlined, GlobalOutlined, FolderOpenOutlined, SearchOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleFormModal, { RefEleFormModal } from '@/components/EleFormModal.vue'
+import EleSearchModal, { RefEleSearchModal } from '@/components/EleSearchModal.vue'
 import CategoryFormModal, { RefCategoryFormModal } from '@/components/CategoryFormModal.vue'
 import CategoryManageDrawer, { RefCategoryManageDrawer } from '@/components/CategoryManageDrawer.vue'
 import { Ele, Page } from 'types/types'
 import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
 import { getErrorMessage } from '@/utils/util'
-import { throttle } from "lodash"
+import { cloneDeep, throttle } from "lodash"
 
 const context = ref()
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
@@ -50,15 +57,17 @@ const listEle = ref<Ele[]>([] as Ele[])
 const page = ref<Page>({ page: 1, page_size: 100 } as Page)
 const hasMore = ref<boolean>(true)
 const refEleFormModal = ref<RefEleFormModal|null>(null)
+const refEleSearchModal = ref<RefEleSearchModal|null>(null)
 const refCategoryFormModal = ref<RefCategoryFormModal|null>(null)
 const refCategoryManageDrawer = ref<RefCategoryManageDrawer|null>(null)
+const eleSearch = ref<Ele>({} as Ele)
 
 const queryEleList = () => {
     if (!hasMore.value) {
         // message.warn("暂无更多收藏")
         return
     }
-    window.api.eleList(JSON.stringify(page.value)).then((result: Error | string) => {
+    window.api.eleList(JSON.stringify(page.value), JSON.stringify(eleSearch.value)).then((result: Error | string) => {
         if (result instanceof Error) {
             message.error(getErrorMessage(result))
             return
@@ -90,6 +99,16 @@ const onEmitUpdateForEle = (ele: Ele) => {
             break
         }
     }
+}
+const onClickSearch = () => {
+    nextTick(() => refEleSearchModal.value?.open(cloneDeep(eleSearch.value)))
+}
+const onEmitEleSearch = (ele: Ele) => {
+    eleSearch.value = ele
+    page.value.page = 1
+    hasMore.value = true
+    listEle.value = []
+    queryEleList()
 }
 
 const onClickShowEleFormModal = () => {
