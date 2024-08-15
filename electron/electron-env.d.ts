@@ -28,6 +28,10 @@ interface API {
   eleList: (rawPage: string) => Promise<string|Error>,
   eleUpdate: (rawEle: string) => Promise<boolean|Error>,
   eleDelete: (eleId: number) => Promise<boolean|Error>,
+  categoryCreate: (rawCategory: string) => Promise<number|Error>,
+  categoryList: () => Promise<string|Error>,
+  categoryUpdate: (rawCategory: string) => Promise<boolean|Error>,
+  categoryDelete: (categoryId: number) => Promise<boolean|Error>,
 }
 
 // Used in Renderer process, expose in `preload.ts`

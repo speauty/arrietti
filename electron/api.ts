@@ -1,6 +1,6 @@
 /** 接口-网路请求 */
 import { ipcMain, IpcMainInvokeEvent, shell, net } from 'electron'
-import { Ele, Page } from 'types/types'
+import { Category, Ele, Page } from 'types/types'
 import { getDB } from './db/db'
 import type { Database } from 'sqlite3'
 
@@ -12,6 +12,11 @@ export const registerApis = () => {
     ipcMain.handle('api:eleList', eleList)
     ipcMain.handle('api:eleUpdate', eleUpdate)
     ipcMain.handle('api:eleDelete', eleDelete)
+
+    ipcMain.handle('api:categoryCreate', categoryCreate)
+    ipcMain.handle('api:categoryList', categoryList)
+    ipcMain.handle('api:categoryUpdate', categoryUpdate)
+    ipcMain.handle('api:categoryDelete', categoryDelete)
 }
 
 export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<number|Error> => {
@@ -27,8 +32,11 @@ export const eleCreate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<n
                 if (result?.cnt > 0) reject(new Error("当前站点已存在"))
             })
             .run(
-                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at],
+                'insert into arrietti_ele (title,desc,keywords,link_logo,link,link_origin,num_order,is_accessible,created_at,updated_at,category_id,category_title) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [
+                    ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.is_accessible, ele.created_at, ele.updated_at,
+                    ele.category_id, ele.category_title,
+                ],
                 (err: Error|null) => err&&reject(err)
             )
             .get('select id from arrietti_ele where link_origin=?', [ele.link_origin], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
@@ -72,8 +80,8 @@ export const eleUpdate = (_event: IpcMainInvokeEvent, rawEle: string): Promise<b
                 if (result?.cnt > 0) reject(new Error("当前站点已存在"))
             })
             .run(
-                'update arrietti_ele set title=?, desc=?, keywords=?, link_logo=?, link=?, link_origin=?, num_order=?, updated_at=? where id=?',
-                [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.updated_at, ele.id],
+                'update arrietti_ele set title=?, desc=?, keywords=?, link_logo=?, link=?, link_origin=?, num_order=?, updated_at=?, category_id=?, category_title=? where id=?',
+                [ele.title, ele.desc, ele.keywords?.join(','), ele.link_logo, ele.link, ele.link_origin, ele.num_order, ele.updated_at, ele.category_id, ele.category_title, ele.id],
                 (err => err?reject(err):resolve(true))
             )
         }).catch((err: Error) => reject(err))
@@ -85,6 +93,68 @@ export const eleDelete = (_event: IpcMainInvokeEvent, eleId: number): Promise<bo
         getDB().then((db: Database) => {
             db.run(
                 'delete from arrietti_ele where id=?', [eleId],
+                ((err: Error|null) => err?reject(err):resolve(true))
+            )
+        }).catch(err => reject(err))
+    })
+}
+
+export const categoryCreate = (_event: IpcMainInvokeEvent, rawCategory: string): Promise<number|Error> => {
+    return new Promise<number>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            let category = JSON.parse(rawCategory) as Category
+            !category?.num_order && (category.num_order = 0)
+            db.get('select count(*) as cnt from arrietti_category where title=?', [category.title], (err :Error|null, result: any): void => {
+                err && reject(err)
+                if (result?.cnt > 0) reject(new Error("当前分类已存在"))
+            })
+            .run(
+                'insert into arrietti_category (title,num_order,created_at,updated_at) values (?, ?, ?, ?)',
+                [category.title, category.num_order, category.created_at, category.updated_at],
+                (err: Error|null) => err&&reject(err)
+            )
+            .get('select id from arrietti_category where title=?', [category.title], (err :Error|null, result: any): void => err?reject(err):resolve(result.id))
+        }).catch((err: Error) => reject(err))
+    })
+}
+
+export const categoryList = (_event: IpcMainInvokeEvent): Promise<string|Error> => {
+    return new Promise<string|Error>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            db.all<Category>(
+                "select * from arrietti_category order by num_order desc, id desc",
+                ((err: Error|null, raws: Category[]) => {
+                    err&&reject(err)
+                    resolve(JSON.stringify(raws))
+                })
+            )
+        }).catch(err => reject(err))
+    })
+}
+
+export const categoryUpdate = (_event: IpcMainInvokeEvent, rawCategory: string): Promise<boolean|Error> => {
+    return new Promise<boolean>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            let category = JSON.parse(rawCategory) as Category
+            !category?.num_order && (category.num_order = 0)
+            db.get('select count(*) as cnt from arrietti_category where title=? and id!=?', [category.title, category.id], (err :Error|null, result: any): void => {
+                err && reject(err)
+                if (result?.cnt > 0) reject(new Error("当前分类已存在"))
+            })
+            .run(
+                'update arrietti_ele set title=?, num_order=?, updated_at=? where id=?',
+                [category.title, category.num_order, category.updated_at, category.id],
+                (err => err?reject(err):resolve(true))
+            )
+        }).catch((err: Error) => reject(err))
+    })
+}
+
+export const categoryDelete = (_event: IpcMainInvokeEvent, categoryId: number): Promise<boolean|Error> => {
+    return new Promise<boolean|Error>((resolve, reject) => {
+        getDB().then((db: Database) => {
+            db.run(
+                'delete from arrietti_category where id=?', [categoryId],
                 ((err: Error|null) => err?reject(err):resolve(true))
             )
         }).catch(err => reject(err))

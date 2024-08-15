@@ -27,4 +27,9 @@ contextBridge.exposeInMainWorld('api',{
   eleList: (rawPage: string) => ipcRenderer.invoke("api:eleList", rawPage),
   eleUpdate: (rawEle: string) => ipcRenderer.invoke("api:eleUpdate", rawEle),
   eleDelete: (eleId: number) => ipcRenderer.invoke("api:eleDelete", eleId),
+
+  categoryCreate: (rawCategory: string) => ipcRenderer.invoke("api:categoryCreate", rawCategory),
+  categoryList: () => ipcRenderer.invoke("api:categoryList"),
+  categoryUpdate: (rawCategory: string) => ipcRenderer.invoke("api:categoryUpdate", rawCategory),
+  categoryDelete: (categoryId: number) => ipcRenderer.invoke("api:categoryDelete", categoryId),
 })

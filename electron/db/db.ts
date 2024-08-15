@@ -14,11 +14,12 @@ export const getDB = (filename: string = db): Promise<Database> => {
 }
 
 export const initDB = (): Promise<boolean> => {
-  return new Promise<boolean>((_resolve, reject) => {
+  return new Promise<boolean>((resolve, reject) => {
     getDB().then((db: Database) => {
-      db.run(ddl, (err: Error|null) => (
+      db.run(ddl, (err: Error|null) => {
         err && reject(err)
-      ))
+        resolve(true)
+      })
     }).catch(err => reject(err))
   })
 }
@@ -26,10 +27,19 @@ export const initDB = (): Promise<boolean> => {
 const db = resolve("arrietti.dat")
 
 const ddl: string = `
+create table if not exists arrietti_category (
+  id integer primary key autoincrement,
+  title char(16) not null,
+  num_order integer not null default 0,
+  created_at char(20) not null default '',
+  updated_at char(20) not null default ''
+);
 create table if not exists arrietti_ele (
   id integer primary key autoincrement,
   title text not null,
   desc text not null default '',
+  category_id integer not null default 0,
+  category_title char(16) not null default '',
   keywords text not null default '',
   link_logo varchar(256) not null default '',
   link varchar(256) not null default '',

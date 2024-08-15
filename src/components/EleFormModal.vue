@@ -1,6 +1,6 @@
 <template>
-    <a-modal v-model:open="modalIsVisible" :title="ele.id?'我要更新':'我要收藏'" :maskClosable="false"
-        :keyboard="false" :footer="null" :centered="true">
+    <a-modal v-model:open="modalIsVisible" :title="ele.id ? '我要更新' : '我要收藏'" :maskClosable="false" :keyboard="false"
+        :footer="null" :centered="true">
         <a-spin :spinning="isSpinForForm" :tip="tipsForSpin">
             <a-form :label-col="{ style: { width: '100px' } }" ref="refFormEle" :model="ele" :rules="rules"
                 :colon="false">
@@ -16,6 +16,10 @@
                         <a-input v-model:value="ele.num_order" placeholder="请输入排序" allow-clear />
                     </a-form-item>
                 </a-flex>
+                <a-form-item label="所属分类" name="category_id">
+                    <a-select v-model:value="ele.category_id" :options="categories" :field-names="{ label: 'title', value: 'id' }" @change="onChangeCateogrySelect">
+                    </a-select>
+                </a-form-item>
                 <a-form-item label="站点标签" tooltip="站点标签, 又叫站点关键字, 以固定字符串间隔" name="keywords">
                     <a-select v-model:value="ele.keywords" mode="tags" notFoundContent="暂无标签, 请手动输入, 回车确认" />
                 </a-form-item>
@@ -26,7 +30,7 @@
                 <a-form-item>
                     <div class="w-full flex items-center justify-center gap-2">
                         <a-button @click="onClickCancel">取消</a-button>
-                        <a-button type="primary" @click="onClickSubmit">{{ele.id?'更新':'收藏'}}</a-button>
+                        <a-button type="primary" @click="onClickSubmit">{{ ele.id ? '更新' : '收藏' }}</a-button>
                     </div>
                 </a-form-item>
             </a-form>
@@ -39,12 +43,12 @@ import { getEleFromSourceCode, getErrorMessage } from '@/utils/util'
 import { Rule } from 'ant-design-vue/es/form/interface'
 import { MessageApi } from 'ant-design-vue/es/message'
 import dayjs from 'dayjs'
-import {clone} from "lodash"
-import { Ele } from 'types/types'
+import { clone } from "lodash"
+import { Category, Ele } from 'types/types'
 import { getCurrentInstance, ref } from 'vue'
 
 export interface RefEleFormModal {
-    onClickShowModal: (paramEle: Ele|null) => void
+    onClickShowModal: (paramEle: Ele | null) => void
 }
 
 const emits = defineEmits(["submit"])
@@ -56,18 +60,30 @@ const refFormEle = ref()
 const ele = ref<Ele>({ link: "", num_order: 0 } as Ele)
 const isSpinForForm = ref<boolean>(false)
 const tipsForSpin = ref<string>("")
+const categories = ref<Category[]>([] as Category[])
 const rules: Record<string, Rule[]> = {
     link: [{ required: true, message: '请输入站点链接', trigger: 'blur' }],
     title: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-};
+    category_id: [{ required: true, message: '请选择分类', trigger: 'blur' }],
+}
+
+const onChangeCateogrySelect = (categoryId: number) => {
+    ele.value.category_id = categoryId
+    for (const category of categories.value) {
+        if (category.id === categoryId) {
+            ele.value.category_title = category.title
+            break
+        }
+    }
+} 
 
 const onClickToHack = (link: string) => {
     if (ele.value.id) {
-        ele.value = { id: ele.value.id, link: link, num_order: ele.value.num_order } as Ele
+        ele.value = { id: ele.value.id, category_id: ele.value.category_id, category_title: ele.value.category_title, link: link, num_order: ele.value.num_order } as Ele
     } else {
-        ele.value = { link: link, num_order: ele.value.num_order } as Ele
+        ele.value = { category_id: ele.value.category_id, category_title: ele.value.category_title, link: link, num_order: ele.value.num_order } as Ele
     }
-    
+
     if (!link) return
     try {
         const linkParsed = new URL(link)
@@ -108,37 +124,45 @@ const onClickSubmit = () => {
         isSpinForForm.value = true
         if (ele.value.id) {
             window.api.eleUpdate(JSON.stringify(ele.value)).then((result: boolean | Error) => {
-            if (result === false || result instanceof Error) {
-                const msg: string = result instanceof Error ? getErrorMessage(result) : "更新失败, 请稍后重试"
-                message.error(msg)
-                return
-            }
-            message.success("更新成功", 1.5, () => {
-                emits("submit", clone(ele.value))
-                onClickCancel()
-            })
-        }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
+                if (result === false || result instanceof Error) {
+                    const msg: string = result instanceof Error ? getErrorMessage(result) : "更新失败, 请稍后重试"
+                    message.error(msg)
+                    return
+                }
+                message.success("更新成功", 1.5, () => {
+                    emits("submit", clone(ele.value))
+                    onClickCancel()
+                })
+            }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
         } else {
             window.api.eleCreate(JSON.stringify(ele.value)).then((result: number | Error) => {
-            if (!result || result instanceof Error) {
-                const msg: string = result instanceof Error ? getErrorMessage(result) : "收藏失败, 请稍后重试"
-                message.error(msg)
-                return
-            }
-            let eleCloned: Ele = clone(ele.value)
-            eleCloned.id = result
-            message.success("收藏成功", 1.5, () => {
-                emits("submit", eleCloned)
-                onClickCancel()
-            })
-        }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
+                if (!result || result instanceof Error) {
+                    const msg: string = result instanceof Error ? getErrorMessage(result) : "收藏失败, 请稍后重试"
+                    message.error(msg)
+                    return
+                }
+                let eleCloned: Ele = clone(ele.value)
+                eleCloned.id = result
+                message.success("收藏成功", 1.5, () => {
+                    emits("submit", eleCloned)
+                    onClickCancel()
+                })
+            }).catch((err: Error) => message.error(getErrorMessage(err))).finally(() => isSpinForForm.value = false)
         }
     }).catch((err: Error) => {
         err instanceof Error && message.error(err.message)
     })
 }
 
-const onClickShowModal = (paramEle: Ele|null) => {
+const onClickShowModal = (paramEle: Ele | null) => {
+    window.api.categoryList().then((result: string | Error) => {
+        if (!result || result instanceof Error) {
+            const msg: string = result instanceof Error ? getErrorMessage(result) : "获取分类失败, 请稍后重试"
+            message.error(msg)
+            return
+        }
+        categories.value = JSON.parse(result) as Category[]
+    })
     paramEle && (ele.value = paramEle)
     modalIsVisible.value = true
 }

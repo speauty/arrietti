@@ -15,11 +15,11 @@
             <template #icon>
                 <AppstoreOutlined />
             </template>
-            <!-- <a-float-button type="primary" tooltip="我要分类" @click="onClickShowCreateModal">
+            <a-float-button type="primary" tooltip="我要分类" @click="onClickShowCategoryFormModal">
                 <template #icon>
                     <FolderOpenOutlined />
                 </template>
-            </a-float-button> -->
+            </a-float-button>
             <a-float-button type="primary" tooltip="我要收藏" @click="onClickShowEleFormModal">
                 <template #icon>
                     <GlobalOutlined />
@@ -27,13 +27,15 @@
             </a-float-button>
         </a-float-button-group>
         <EleFormModal ref="refEleFormModal" @submit="onEmitSubmitForEleCreate" />
+        <CategoryFormModal ref="refCategoryFormModal" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { AppstoreOutlined, GlobalOutlined } from '@ant-design/icons-vue'
+import { AppstoreOutlined, GlobalOutlined, FolderOpenOutlined } from '@ant-design/icons-vue'
 import EleBlockUI from '@/components/EleBlockUI.vue'
 import EleFormModal, { RefEleFormModal } from '@/components/EleFormModal.vue'
+import CategoryFormModal, { RefCategoryFormModal } from '@/components/CategoryFormModal.vue'
 import { Ele, Page } from 'types/types'
 import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
@@ -45,7 +47,8 @@ const message = getCurrentInstance()?.appContext.config.globalProperties.$messag
 const listEle = ref<Ele[]>([] as Ele[])
 const page = ref<Page>({ page: 1, page_size: 100 } as Page)
 const hasMore = ref<boolean>(true)
-const refEleFormModal = ref<RefEleFormModal | null>(null)
+const refEleFormModal = ref<RefEleFormModal|null>(null)
+const refCategoryFormModal = ref<RefCategoryFormModal|null>(null)
 
 const queryEleList = () => {
     if (!hasMore.value) {
@@ -90,10 +93,12 @@ const onClickShowEleFormModal = () => {
     nextTick(() => refEleFormModal.value?.onClickShowModal(null))
 }
 
+const onClickShowCategoryFormModal = () => {
+    nextTick(() => refCategoryFormModal.value?.onClickShowModal(null))
+}
+
 const onEventScroll = (event: any) => { // @todo 存在问题
-    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
-        queryEleList()
-    }
+    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) queryEleList()
 }
 
 onMounted(() => {

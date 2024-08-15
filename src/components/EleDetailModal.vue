@@ -4,6 +4,7 @@
         <a-descriptions :colon="false" :column="2">
             <a-descriptions-item :span="2" label="名称">{{ele.title}}</a-descriptions-item>
             <a-descriptions-item :span="2" label="简介" v-if="ele.desc">{{ele.desc}}</a-descriptions-item>
+            <a-descriptions-item :span="2" label="所属分类" v-if="ele.category_title"><a-tag color="#87d068">{{ ele.category_title }}</a-tag></a-descriptions-item>
             <a-descriptions-item :span="2" label="关键词" v-if="ele.keywords?.length">
                 <div class="w-full flex flex-wrap gap-1 items-center">
                     <a-tag v-for="(keyword, idx) in ele.keywords" :bordered="false" :color="tagColors[idx%14]">{{ keyword }}</a-tag>

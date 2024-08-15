@@ -12,7 +12,7 @@
           <a-tag v-for="(keyword, idx) in ele.keywords" :bordered="false" :color="tagColors[idx%14]">{{ keyword }}</a-tag>
         </div>
       </div>
-      <div class="absolute top-2 left-1 text-xs text-center text-primary/70 w-14 truncate">默认分类</div>
+      <div v-if="ele.category_title" class="absolute top-2 left-1 text-xs text-primary/70 w-14 truncate">{{ ele.category_title }}</div>
     </div>
     <template #overlay>
       <a-menu>
@@ -26,7 +26,7 @@
   <EleDetailModal ref="refEleDetailModal" />
 </template>
 <script setup lang="ts">
-import { getErrorMessage } from '@/utils/util';
+import { getErrorMessage } from '@/utils/util'
 import { MessageApi } from 'ant-design-vue/es/message'
 import { Ele } from 'types/types'
 import { getCurrentInstance, nextTick, ref } from 'vue'
@@ -38,18 +38,17 @@ const emits = defineEmits(["delete", "update"])
 const props = withDefaults(defineProps<{
   ele: Ele
 }>(), {})
+props.ele.id == 47 && console.log(props.ele)
 const tagColors: string[] = [
     'success', 'error', 'warning', 'magenta', 'red', 'volcano', 'orange', 'gold', 'lime',
     'green', 'cyan', 'blue', 'geekblue', 'purple'
 ]
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
-
 const refEleFormModal = ref<RefEleFormModal|null>(null)
-  const onClickShowEleFormModal = () => {
+const onClickShowEleFormModal = () => {
   nextTick(() => refEleFormModal.value?.onClickShowModal(clone(props.ele)))
 }
 const onEmitSubmitForEleUpdate = (ele: Ele) => emits("update", ele)
-
 const refEleDetailModal = ref<RefEleDetailModal|null>(null)
 const onClickShowDetailModal = () => {
   nextTick(() => refEleDetailModal.value?.onClickShowModal(clone(props.ele)))
@@ -58,7 +57,6 @@ const onClickShowDetailModal = () => {
 const onClickToOpenInBrower = () => {
   window.api.openUrlWithDefaultBrowser(props.ele.link)
 }
-
 const onClickDelete = () => {
   window.api.eleDelete(props.ele.id).then((result: boolean | Error) => {
     if (result instanceof Error) {
