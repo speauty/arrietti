@@ -1,7 +1,7 @@
 <template>
   <a-dropdown :trigger="['contextmenu']">
     <div @click="onClickToOpenInBrower"
-      class="rounded-xl flex items-center justify-between gap-2 w-64 h-24 p-2 overflow-hidden text-slate-600 hover:text-primary hover:shadow-lg hover:shadow-primary/30 hover:border-transparent border border-solid border-primary/20 shadow-lg shadow-primary/10 cursor-pointer ">
+      class="rounded-xl relative flex items-center justify-between gap-2 w-64 h-24 p-2 overflow-hidden text-slate-600 hover:text-primary hover:shadow-lg hover:shadow-primary/30 hover:border-transparent border border-solid border-primary/20 shadow-lg shadow-primary/10 cursor-pointer ">
       <div class="h-full w-12 flex items-center justify-center">
         <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" fallback="/logo.png" />
       </div>
@@ -12,6 +12,7 @@
           <a-tag v-for="(keyword, idx) in ele.keywords" :bordered="false" :color="tagColors[idx%14]">{{ keyword }}</a-tag>
         </div>
       </div>
+      <div class="absolute top-2 left-1 text-xs text-center text-primary/70 w-14 truncate">默认分类</div>
     </div>
     <template #overlay>
       <a-menu>
