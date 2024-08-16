@@ -1,4 +1,5 @@
-import {resolve} from 'node:path'
+import { app } from 'electron'
+import {join} from 'node:path'
 import {
   type Database,
   verbose,
@@ -24,7 +25,7 @@ export const initDB = (): Promise<boolean> => {
   })
 }
 
-const db = resolve("arrietti.dat")
+const db = join(app.getPath('userData'), 'arrietti.dat')
 
 const ddl: string = `
 create table if not exists arrietti_category (
