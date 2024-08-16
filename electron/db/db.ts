@@ -16,7 +16,7 @@ export const getDB = (filename: string = db): Promise<Database> => {
 export const initDB = (): Promise<boolean> => {
   return new Promise<boolean>((resolve, reject) => {
     getDB().then((db: Database) => {
-      db.run(ddl, (err: Error|null) => {
+      db.exec(ddl, (err: Error|null) => {
         err && reject(err)
         resolve(true)
       })
