@@ -14,7 +14,7 @@
             <a-descriptions-item label="排序">{{ ele.num_order }}</a-descriptions-item>
             <a-descriptions-item :span="2" label="域名">{{ ele.link_origin }}</a-descriptions-item>
             <a-descriptions-item :span="2" label="图标" v-if="ele.link_logo">
-                <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" fallback="/logo.png" />
+                <a-image class="rounded" :preview="false" :width="48" :src="ele.link_logo" :fallback="Logo" />
             </a-descriptions-item>
           </a-descriptions>
     </a-modal>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Ele } from 'types/types'
+import Logo from "@/../public/logo.png"
 
 export interface RefEleDetailModal {
     onClickShowModal: (paramEle: Ele) => void

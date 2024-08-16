@@ -4,7 +4,7 @@
                 <EleBlockUI v-for="ele in listEle" :ele="ele" @update="onEmitUpdateForEle" @delete="onEmitDeleteForEle" />
         </div>
         <div v-else class="w-full h-full flex items-center justify-center ">
-            <a-empty image="/logo.png">
+            <a-empty :image="Logo">
                 <template #description>
                     <span class="text-xs text-slate-500">暂无收藏站点，请点击“我要收藏”进行创建</span>
                 </template>
@@ -50,6 +50,7 @@ import { getCurrentInstance, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { MessageApi } from 'ant-design-vue/es/message'
 import { getErrorMessage } from '@/utils/util'
 import { cloneDeep, throttle } from "lodash"
+import Logo from "@/../public/logo.png"
 
 const context = ref()
 const message = getCurrentInstance()?.appContext.config.globalProperties.$message as MessageApi
