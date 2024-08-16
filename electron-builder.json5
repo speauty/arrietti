@@ -3,7 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.arrietti.gui",
   "asar": true,
-  "productName": "arrietti",
+  "productName": "阿莉埃蒂",
   "directories": {
     "output": "release/${version}"
   },

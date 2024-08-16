@@ -1,7 +1,7 @@
 <template>
     <a-drawer title="分类管理" rootClassName="drawer-category-manage" placement="right" v-model:open="isShow" :maskClosable="false" :closable="true"
         :get-container="false" :style="{ position: 'absolute' }" @close="close">
-        <a-table size="small" bordered :columns="columns" :data-source="categories">
+        <a-table size="small" bordered :columns="columns" :data-source="categories" :pagination="{ pageSize: 8 }">
             <template #bodyCell="{ column, record }">
                 <template v-if="column.key === 'operation'">
                   <div class="w-full flex items-center justify-center">

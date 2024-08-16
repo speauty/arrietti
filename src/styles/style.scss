@@ -7,7 +7,10 @@
 .ant-modal { // 临时全局定义模态框距顶距离-20px
     top: 20px;
 }
-
+.ant-drawer {
+    @apply custom-overflow-y;
+    @apply select-none;
+}
 .drawer-category-manage {
     .ant-drawer-header {
         padding: 8px;
@@ -16,6 +19,7 @@
         }
     }
     .ant-drawer-body {
+        @apply custom-overflow-y;
         padding: 8px;
     }
 }
